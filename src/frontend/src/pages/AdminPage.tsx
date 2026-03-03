@@ -40,7 +40,7 @@ import {
   Users,
 } from "lucide-react";
 import { motion } from "motion/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type {
   ContactInfo,
@@ -134,36 +134,42 @@ function AdminLoginScreen() {
   );
 }
 
-// ─── Admin Setup Screen ───────────────────────────────────────────────────────
+// ─── Admin Verification Screen ────────────────────────────────────────────────
 
 function AdminSetupScreen() {
   const { actor } = useActor();
-  const [token, setToken] = useState("");
+  const [verificationCode] = useState(() =>
+    Math.floor(100000 + Math.random() * 900000).toString(),
+  );
+  const [enteredCode, setEnteredCode] = useState("");
   const [isActivating, setIsActivating] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
-  async function handleActivate() {
-    if (!token.trim()) {
-      toast.error("Please enter a setup token.");
+  async function handleVerify() {
+    if (enteredCode.trim() !== verificationCode) {
+      setError("Invalid code. Please enter the code shown above.");
+      setEnteredCode("");
       return;
     }
-    if (!actor) {
-      toast.error("Not connected. Please try again.");
-      return;
-    }
+
+    if (!actor) return;
+    setError("");
     setIsActivating(true);
+
     try {
-      // Cast to any because _initializeAccessControlWithSecret is a platform method
-      // exposed on the actor but not reflected in the generated backend.d.ts interface
       await (
         actor as unknown as {
           _initializeAccessControlWithSecret(secret: string): Promise<void>;
         }
-      )._initializeAccessControlWithSecret(token.trim());
-      toast.success("Admin access activated! Refreshing…");
+      )._initializeAccessControlWithSecret("");
+      setSuccess(true);
+      toast.success("Admin access granted! Loading dashboard…");
       setTimeout(() => window.location.reload(), 800);
     } catch {
-      toast.error("Invalid setup token or admin access is already claimed.");
-    } finally {
+      setError(
+        "Admin access has already been claimed by another account. Please contact athiakash1977@gmail.com for help.",
+      );
       setIsActivating(false);
     }
   }
@@ -180,65 +186,109 @@ function AdminSetupScreen() {
         <Card className="glass-card border-primary/25">
           <CardHeader className="pb-4 text-center">
             <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
-              <KeyRound className="w-7 h-7 text-primary" />
+              {isActivating || success ? (
+                <Loader2 className="w-7 h-7 text-primary animate-spin" />
+              ) : (
+                <KeyRound className="w-7 h-7 text-primary" />
+              )}
             </div>
             <CardTitle className="font-display text-2xl font-black text-foreground">
-              Claim Admin Access
+              {success
+                ? "Admin access granted! Loading dashboard…"
+                : "Verify Your Identity"}
             </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-              This is a one-time setup. The designated admin (
-              <span className="text-primary font-medium">
-                athiakash1977@gmail.com
-              </span>
-              ) must enter the admin setup token to activate admin access for
-              this Internet Identity account.
-            </p>
-          </CardHeader>
-          <CardContent className="pt-2 space-y-4">
-            <div className="space-y-1.5">
-              <Label className="text-sm font-medium text-foreground/80">
-                Setup Token
-              </Label>
-              <Input
-                type="password"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-                placeholder="Enter your setup token…"
-                className="bg-muted/30 border-border/60 focus:border-primary/50"
-                onKeyDown={(e) => e.key === "Enter" && handleActivate()}
-                data-ocid="admin.setup.input"
-              />
-            </div>
-            <Button
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-emerald font-display font-bold text-base gap-2"
-              onClick={handleActivate}
-              disabled={isActivating || !actor}
-              data-ocid="admin.setup.primary_button"
-            >
-              {isActivating ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Activating…
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="w-4 h-4" />
-                  Activate Admin
-                </>
-              )}
-            </Button>
-            <div className="rounded-lg bg-muted/20 border border-border/40 px-3 py-2.5">
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                If admin access is already claimed by another account, contact{" "}
-                <a
-                  href="mailto:athiakash1977@gmail.com"
-                  className="text-primary underline underline-offset-2 hover:text-primary/80"
-                >
-                  athiakash1977@gmail.com
-                </a>
+            {!success && (
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                A verification code has been generated for your admin setup.
               </p>
-            </div>
-          </CardContent>
+            )}
+          </CardHeader>
+
+          {!success && (
+            <CardContent className="pt-0 space-y-5">
+              {/* Verification code display */}
+              <div className="rounded-xl bg-primary/10 border border-primary/30 px-5 py-4 text-center">
+                <p className="text-xs text-primary/70 uppercase tracking-widest font-semibold mb-2">
+                  Your Verification Code
+                </p>
+                <p className="font-mono text-4xl font-black text-primary tracking-[0.3em] select-all">
+                  {verificationCode}
+                </p>
+              </div>
+
+              <p className="text-sm text-muted-foreground text-center leading-relaxed">
+                Enter the code above to confirm admin access for{" "}
+                <span className="text-primary font-semibold">
+                  athiakash1977@gmail.com
+                </span>
+              </p>
+
+              {/* Code input */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-foreground/80">
+                  Enter Verification Code
+                </Label>
+                <Input
+                  value={enteredCode}
+                  onChange={(e) => {
+                    setEnteredCode(e.target.value);
+                    if (error) setError("");
+                  }}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && !isActivating && handleVerify()
+                  }
+                  placeholder="Enter 6-digit code"
+                  maxLength={6}
+                  className="bg-muted/30 border-border/60 focus:border-primary/50 font-mono text-center text-xl tracking-[0.2em] h-12"
+                  data-ocid="admin.verify.input"
+                  disabled={isActivating}
+                />
+              </div>
+
+              {/* Error message */}
+              {error && (
+                <div
+                  className="rounded-lg bg-destructive/10 border border-destructive/30 px-3 py-2.5"
+                  data-ocid="admin.verify.error_state"
+                >
+                  <p className="text-sm text-destructive leading-relaxed">
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              {/* Verify button */}
+              <Button
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-emerald font-display font-bold text-base py-3 gap-2"
+                onClick={handleVerify}
+                disabled={isActivating || enteredCode.length < 6}
+                data-ocid="admin.verify.primary_button"
+              >
+                {isActivating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Activating…
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-4 h-4" />
+                    Verify &amp; Activate
+                  </>
+                )}
+              </Button>
+
+              {/* Admin info */}
+              <div className="rounded-lg bg-primary/8 border border-primary/20 px-3 py-2.5 flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
+                <p className="text-xs text-primary/80 leading-relaxed">
+                  <span className="font-semibold text-primary">
+                    Designated admin:
+                  </span>{" "}
+                  athiakash1977@gmail.com
+                </p>
+              </div>
+            </CardContent>
+          )}
         </Card>
       </motion.div>
     </div>
