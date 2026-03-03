@@ -1,0 +1,282 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Fonts ─────────────────────────────────────────────────────────── */
+@font-face {
+  font-family: "Cabinet Grotesk";
+  src: url("/assets/fonts/CabinetGrotesk.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "General Sans";
+  src: url("/assets/fonts/GeneralSans.woff2") format("woff2");
+  font-weight: 200 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ─── Design Tokens ──────────────────────────────────────────────────── */
+/* Dark Emerald Green + Gold theme                                        */
+/* Primary: vibrant emerald-green                                         */
+/* Background: deep forest-dark                                           */
+/* Accent: warm gold-amber                                                */
+@layer base {
+  :root {
+    --radius: 0.75rem;
+
+    /* Deep dark forest backgrounds */
+    --background: 0.1 0.022 152;
+    --foreground: 0.96 0.008 150;
+
+    --card: 0.13 0.025 152;
+    --card-foreground: 0.96 0.008 150;
+
+    --popover: 0.12 0.022 152;
+    --popover-foreground: 0.96 0.008 150;
+
+    /* Vibrant emerald primary */
+    --primary: 0.72 0.21 160;
+    --primary-foreground: 0.06 0.015 152;
+
+    /* Warm amber/gold accent */
+    --accent: 0.78 0.17 78;
+    --accent-foreground: 0.06 0.015 152;
+
+    --secondary: 0.17 0.03 152;
+    --secondary-foreground: 0.9 0.01 150;
+
+    --muted: 0.16 0.025 152;
+    --muted-foreground: 0.56 0.06 152;
+
+    --destructive: 0.6 0.22 25;
+    --destructive-foreground: 0.98 0 0;
+
+    --border: 0.22 0.04 155;
+    --input: 0.2 0.03 155;
+    --ring: 0.72 0.21 160;
+
+    --chart-1: 0.72 0.21 160;
+    --chart-2: 0.78 0.17 78;
+    --chart-3: 0.65 0.18 200;
+    --chart-4: 0.7 0.18 280;
+    --chart-5: 0.7 0.19 35;
+
+    --sidebar: 0.11 0.022 152;
+    --sidebar-foreground: 0.96 0.008 150;
+    --sidebar-primary: 0.72 0.21 160;
+    --sidebar-primary-foreground: 0.06 0.015 152;
+    --sidebar-accent: 0.17 0.03 152;
+    --sidebar-accent-foreground: 0.9 0.01 150;
+    --sidebar-border: 0.22 0.04 155;
+    --sidebar-ring: 0.72 0.21 160;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: "General Sans", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* ─── Custom Utilities ───────────────────────────────────────────────── */
+@layer utilities {
+  .font-display {
+    font-family: "Cabinet Grotesk", sans-serif;
+  }
+
+  /* Emerald glow effects */
+  .glow-emerald {
+    box-shadow:
+      0 0 20px oklch(0.72 0.21 160 / 0.35),
+      0 0 50px oklch(0.72 0.21 160 / 0.15);
+  }
+
+  .glow-gold {
+    box-shadow:
+      0 0 20px oklch(0.78 0.17 78 / 0.35),
+      0 0 50px oklch(0.78 0.17 78 / 0.15);
+  }
+
+  .text-glow-emerald {
+    text-shadow: 0 0 24px oklch(0.72 0.21 160 / 0.6);
+  }
+
+  /* Tech circuit board background overlay */
+  .circuit-bg {
+    background-image:
+      radial-gradient(
+        ellipse at 15% 40%,
+        oklch(0.72 0.21 160 / 0.08) 0%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse at 85% 15%,
+        oklch(0.78 0.17 78 / 0.06) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 60% 80%,
+        oklch(0.72 0.21 160 / 0.05) 0%,
+        transparent 50%
+      );
+  }
+
+  /* Dark tech grid pattern */
+  .tech-grid-bg {
+    background-image:
+      linear-gradient(
+        oklch(0.72 0.21 160 / 0.05) 1px,
+        transparent 1px
+      ),
+      linear-gradient(
+        90deg,
+        oklch(0.72 0.21 160 / 0.05) 1px,
+        transparent 1px
+      );
+    background-size: 40px 40px;
+  }
+
+  /* Hero section: dark forest background with grid */
+  .hero-bg {
+    background:
+      linear-gradient(
+        160deg,
+        oklch(0.08 0.03 155) 0%,
+        oklch(0.1 0.025 152) 30%,
+        oklch(0.12 0.028 148) 60%,
+        oklch(0.09 0.02 155) 100%
+      );
+  }
+
+  /* Glassmorphism card */
+  .glass-card {
+    background: linear-gradient(
+      135deg,
+      oklch(0.16 0.03 152 / 0.85),
+      oklch(0.12 0.022 152 / 0.9)
+    );
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid oklch(0.72 0.21 160 / 0.2);
+    transition:
+      all 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .glass-card:hover {
+    border-color: oklch(0.72 0.21 160 / 0.5);
+    box-shadow:
+      0 8px 32px oklch(0.72 0.21 160 / 0.2),
+      0 4px 16px oklch(0 0 0 / 0.4);
+    transform: translateY(-3px);
+  }
+
+  /* Domain card hover glow */
+  .domain-card-glow {
+    transition:
+      box-shadow 0.3s ease,
+      border-color 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .domain-card-glow:hover {
+    box-shadow:
+      0 0 30px oklch(0.72 0.21 160 / 0.25),
+      inset 0 0 30px oklch(0.72 0.21 160 / 0.05);
+    border-color: oklch(0.72 0.21 160 / 0.6);
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    background: linear-gradient(
+      135deg,
+      oklch(0.72 0.21 160),
+      oklch(0.78 0.17 78)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Emerald gradient text */
+  .emerald-gradient-text {
+    background: linear-gradient(
+      135deg,
+      oklch(0.8 0.2 160),
+      oklch(0.65 0.22 155)
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Timeline vertical line */
+  .timeline-line {
+    background: linear-gradient(
+      to bottom,
+      oklch(0.72 0.21 160 / 0.8),
+      oklch(0.78 0.17 78 / 0.8)
+    );
+  }
+
+  /* Section divider */
+  .section-divider {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(0.72 0.21 160 / 0.35),
+      transparent
+    );
+    height: 1px;
+  }
+
+  /* Countdown box */
+  .countdown-block {
+    background: linear-gradient(
+      135deg,
+      oklch(0.14 0.03 152),
+      oklch(0.18 0.035 150)
+    );
+    border: 1px solid oklch(0.72 0.21 160 / 0.35);
+    box-shadow:
+      0 0 15px oklch(0.72 0.21 160 / 0.12),
+      inset 0 1px 0 oklch(0.72 0.21 160 / 0.1);
+  }
+
+  /* Nav glass */
+  .nav-glass {
+    background: oklch(0.1 0.022 152 / 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid oklch(0.72 0.21 160 / 0.15);
+  }
+}
+
+/* ─── Scrollbar ──────────────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 7px;
+}
+::-webkit-scrollbar-track {
+  background: oklch(0.1 0.022 152);
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.25 0.05 155);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.72 0.21 160 / 0.6);
+}
