@@ -2,10 +2,11 @@ import { Badge } from "@/components/ui/badge";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { motion } from "motion/react";
 import { STATIC_CONTACTS } from "../data/staticData";
-import { useAllContacts } from "../hooks/useQueries";
+import { useAllContacts, useEventInfo } from "../hooks/useQueries";
 
 export default function ContactPage() {
   const { data: backendContacts } = useAllContacts();
+  const { data: eventInfo } = useEventInfo();
   const contacts =
     backendContacts && backendContacts.length > 0
       ? backendContacts
@@ -96,8 +97,9 @@ export default function ContactPage() {
                 Venue Address
               </h3>
               <address className="not-italic space-y-1.5 text-sm text-muted-foreground leading-relaxed">
-                {/* TODO: Replace with your college address */}
-                <p className="text-foreground font-bold">[Your College Name]</p>
+                <p className="text-foreground font-bold">
+                  {eventInfo?.college || "[Your College Name]"}
+                </p>
                 <p>Department of ECE</p>
                 <p>[City], [State] — [PIN Code]</p>
                 <p>India</p>
@@ -110,7 +112,7 @@ export default function ContactPage() {
                   <div className="flex justify-between">
                     <span>Event Date</span>
                     <span className="text-foreground font-bold">
-                      April 15, 2026
+                      {eventInfo?.eventDate || "April 15, 2026"}
                     </span>
                   </div>
                   <div className="flex justify-between">

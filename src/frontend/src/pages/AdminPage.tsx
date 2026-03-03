@@ -28,7 +28,6 @@ import {
   Edit2,
   Globe,
   Info,
-  KeyRound,
   Layers,
   Loader2,
   LogIn,
@@ -134,45 +133,52 @@ function AdminLoginScreen() {
   );
 }
 
-// ─── Admin Verification Screen ────────────────────────────────────────────────
+// ─── Admin Setup Screen (auto-claim) ─────────────────────────────────────────
 
-function AdminSetupScreen() {
-  const { actor } = useActor();
-  const [verificationCode] = useState(() =>
-    Math.floor(100000 + Math.random() * 900000).toString(),
+function AdminSetupScreen({ onSuccess }: { onSuccess?: () => void }) {
+  const { actor, isFetching } = useActor();
+  const [status, setStatus] = useState<"claiming" | "denied" | "done">(
+    "claiming",
   );
-  const [enteredCode, setEnteredCode] = useState("");
-  const [isActivating, setIsActivating] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
 
-  async function handleVerify() {
-    if (enteredCode.trim() !== verificationCode) {
-      setError("Invalid code. Please enter the code shown above.");
-      setEnteredCode("");
-      return;
-    }
+  useEffect(() => {
+    if (isFetching || !actor || status !== "claiming") return;
 
-    if (!actor) return;
-    setError("");
-    setIsActivating(true);
+    async function autoClaim() {
+      if (!actor) return;
+      try {
+        // Register the caller — if they're the first user and the backend token
+        // is empty, they get #admin; otherwise they get #user.
+        await (
+          actor as unknown as {
+            _initializeAccessControlWithSecret(secret: string): Promise<void>;
+          }
+        )._initializeAccessControlWithSecret("");
 
-    try {
-      await (
-        actor as unknown as {
-          _initializeAccessControlWithSecret(secret: string): Promise<void>;
+        // Now re-check whether we actually got admin
+        let gotAdmin = false;
+        try {
+          gotAdmin = await actor.isCallerAdmin();
+        } catch {
+          gotAdmin = false;
         }
-      )._initializeAccessControlWithSecret("");
-      setSuccess(true);
-      toast.success("Admin access granted! Loading dashboard…");
-      setTimeout(() => window.location.reload(), 800);
-    } catch {
-      setError(
-        "Admin access has already been claimed by another account. Please contact athiakash1977@gmail.com for help.",
-      );
-      setIsActivating(false);
+
+        if (gotAdmin) {
+          setStatus("done");
+          toast.success("Admin access granted! Loading dashboard…");
+          setTimeout(() => onSuccess?.(), 600);
+        } else {
+          setStatus("denied");
+        }
+      } catch {
+        // _initializeAccessControlWithSecret threw — admin already claimed by
+        // someone else, or the secret doesn't match.
+        setStatus("denied");
+      }
     }
-  }
+
+    autoClaim();
+  }, [actor, isFetching, status, onSuccess]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background pt-16">
@@ -186,98 +192,44 @@ function AdminSetupScreen() {
         <Card className="glass-card border-primary/25">
           <CardHeader className="pb-4 text-center">
             <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
-              {isActivating || success ? (
-                <Loader2 className="w-7 h-7 text-primary animate-spin" />
+              {status === "denied" ? (
+                <ShieldCheck className="w-7 h-7 text-destructive" />
+              ) : status === "done" ? (
+                <ShieldCheck className="w-7 h-7 text-primary" />
               ) : (
-                <KeyRound className="w-7 h-7 text-primary" />
+                <Loader2 className="w-7 h-7 text-primary animate-spin" />
               )}
             </div>
             <CardTitle className="font-display text-2xl font-black text-foreground">
-              {success
-                ? "Admin access granted! Loading dashboard…"
-                : "Verify Your Identity"}
+              {status === "denied"
+                ? "Access Denied"
+                : status === "done"
+                  ? "Access Granted!"
+                  : "Activating Admin Access…"}
             </CardTitle>
-            {!success && (
+            {status === "claiming" && (
               <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                A verification code has been generated for your admin setup.
+                Please wait while we configure your admin account.
+              </p>
+            )}
+            {status === "done" && (
+              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
+                Loading your dashboard…
               </p>
             )}
           </CardHeader>
 
-          {!success && (
-            <CardContent className="pt-0 space-y-5">
-              {/* Verification code display */}
-              <div className="rounded-xl bg-primary/10 border border-primary/30 px-5 py-4 text-center">
-                <p className="text-xs text-primary/70 uppercase tracking-widest font-semibold mb-2">
-                  Your Verification Code
-                </p>
-                <p className="font-mono text-4xl font-black text-primary tracking-[0.3em] select-all">
-                  {verificationCode}
-                </p>
-              </div>
-
-              <p className="text-sm text-muted-foreground text-center leading-relaxed">
-                Enter the code above to confirm admin access for{" "}
-                <span className="text-primary font-semibold">
-                  athiakash1977@gmail.com
-                </span>
-              </p>
-
-              {/* Code input */}
-              <div className="space-y-2">
-                <Label className="text-sm font-medium text-foreground/80">
-                  Enter Verification Code
-                </Label>
-                <Input
-                  value={enteredCode}
-                  onChange={(e) => {
-                    setEnteredCode(e.target.value);
-                    if (error) setError("");
-                  }}
-                  onKeyDown={(e) =>
-                    e.key === "Enter" && !isActivating && handleVerify()
-                  }
-                  placeholder="Enter 6-digit code"
-                  maxLength={6}
-                  className="bg-muted/30 border-border/60 focus:border-primary/50 font-mono text-center text-xl tracking-[0.2em] h-12"
-                  data-ocid="admin.verify.input"
-                  disabled={isActivating}
-                />
-              </div>
-
-              {/* Error message */}
-              {error && (
-                <div
-                  className="rounded-lg bg-destructive/10 border border-destructive/30 px-3 py-2.5"
-                  data-ocid="admin.verify.error_state"
-                >
-                  <p className="text-sm text-destructive leading-relaxed">
-                    {error}
-                  </p>
-                </div>
-              )}
-
-              {/* Verify button */}
-              <Button
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-emerald font-display font-bold text-base py-3 gap-2"
-                onClick={handleVerify}
-                disabled={isActivating || enteredCode.length < 6}
-                data-ocid="admin.verify.primary_button"
+          {status === "denied" && (
+            <CardContent className="pt-0 space-y-4">
+              <div
+                className="rounded-lg bg-destructive/10 border border-destructive/30 px-4 py-3"
+                data-ocid="admin.setup.error_state"
               >
-                {isActivating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Activating…
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-4 h-4" />
-                    Verify &amp; Activate
-                  </>
-                )}
-              </Button>
-
-              {/* Admin info */}
+                <p className="text-sm text-destructive leading-relaxed text-center">
+                  Admin access has already been claimed by another account. Only
+                  the designated admin can manage this site.
+                </p>
+              </div>
               <div className="rounded-lg bg-primary/8 border border-primary/20 px-3 py-2.5 flex items-center gap-2">
                 <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
                 <p className="text-xs text-primary/80 leading-relaxed">
@@ -1601,7 +1553,11 @@ function AdminPanel() {
 export default function AdminPage() {
   const { identity } = useInternetIdentity();
   const isLoggedIn = !!identity;
-  const { data: isAdmin, isLoading: checkingAdmin } = useIsCallerAdmin();
+  const {
+    data: isAdmin,
+    isLoading: checkingAdmin,
+    refetch: refetchAdmin,
+  } = useIsCallerAdmin();
 
   // Not logged in
   if (!isLoggedIn) {
@@ -1620,9 +1576,15 @@ export default function AdminPage() {
     );
   }
 
-  // Not admin — show setup screen to claim admin, or not-authorized fallback
+  // Not admin — show setup screen to auto-claim, or access-denied fallback
   if (!isAdmin) {
-    return <AdminSetupScreen />;
+    return (
+      <AdminSetupScreen
+        onSuccess={() => {
+          refetchAdmin();
+        }}
+      />
+    );
   }
 
   // Admin — show full panel

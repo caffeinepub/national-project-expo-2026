@@ -5,6 +5,7 @@ import {
   Car,
   Cpu,
   HeartPulse,
+  Layers,
   Loader2,
   Sprout,
   Zap,
@@ -28,7 +29,7 @@ export default function DomainsPage() {
           iconBg: STATIC_DOMAINS[i % STATIC_DOMAINS.length].iconBg,
           iconColor: STATIC_DOMAINS[i % STATIC_DOMAINS.length].iconColor,
         }))
-      : STATIC_DOMAINS;
+      : [];
 
   return (
     <section id="domains" className="py-24 relative pt-28">
@@ -64,6 +65,21 @@ export default function DomainsPage() {
                 Loading domains...
               </p>
             </div>
+          </div>
+        ) : domains.length === 0 ? (
+          <div
+            data-ocid="domains.empty_state"
+            className="flex flex-col items-center justify-center py-20 text-center"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/25 flex items-center justify-center mb-4">
+              <Layers className="w-8 h-8 text-primary/50" />
+            </div>
+            <p className="text-foreground font-display font-black text-lg mb-1">
+              No domains added yet
+            </p>
+            <p className="text-muted-foreground text-sm max-w-xs">
+              Check back soon — the admin is setting up the innovation tracks.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

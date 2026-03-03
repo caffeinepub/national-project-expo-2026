@@ -8,8 +8,6 @@ import Principal "mo:core/Principal";
 import MixinAuthorization "authorization/MixinAuthorization";
 import AccessControl "authorization/access-control";
 
-// Run migration automatically on upgrade.
-
 actor {
   // Types
   type Registration = {

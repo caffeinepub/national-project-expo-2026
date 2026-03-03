@@ -2,13 +2,9 @@ import { Badge } from "@/components/ui/badge";
 import { Globe, Layers, Target, Users } from "lucide-react";
 import { motion } from "motion/react";
 import { SDG_GOALS } from "../data/staticData";
+import { useEventInfo } from "../hooks/useQueries";
 
-const ABOUT_CARDS = [
-  {
-    icon: Target,
-    title: "Purpose of the Expo",
-    text: "The National Level Project Expo 2026 aims to bring innovative student minds together to showcase technical excellence in AI, IoT, Embedded Systems, Analytics and Sustainable Technologies aligned with UN SDGs.",
-  },
+const STATIC_ABOUT_CARDS = [
   {
     icon: Layers,
     title: "Why 3-Level Online Screening?",
@@ -26,7 +22,14 @@ const ABOUT_CARDS = [
   },
 ];
 
+const DEFAULT_PURPOSE_TEXT =
+  "The National Level Project Expo 2026 aims to bring innovative student minds together to showcase technical excellence in AI, IoT, Embedded Systems, Analytics and Sustainable Technologies aligned with UN SDGs.";
+
 export default function AboutPage() {
+  const { data: eventInfo } = useEventInfo();
+
+  const purposeText = eventInfo?.description || DEFAULT_PURPOSE_TEXT;
+
   return (
     <section id="about" className="py-24 relative pt-28">
       <div className="absolute inset-0 circuit-bg pointer-events-none" />
@@ -52,13 +55,36 @@ export default function AboutPage() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {ABOUT_CARDS.map((card, i) => (
+          {/* Purpose card — driven by backend event description */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0 }}
+            className="glass-card rounded-2xl p-6 sm:p-8"
+          >
+            <div className="flex items-start gap-4">
+              <div className="shrink-0 w-12 h-12 rounded-xl bg-primary/15 border border-primary/35 flex items-center justify-center">
+                <Target className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-display text-lg font-black text-foreground mb-2">
+                  Purpose of the Expo
+                </h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  {purposeText}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {STATIC_ABOUT_CARDS.map((card, i) => (
             <motion.div
               key={card.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+              transition={{ duration: 0.5, delay: (i + 1) * 0.1 }}
               className="glass-card rounded-2xl p-6 sm:p-8"
             >
               <div className="flex items-start gap-4">

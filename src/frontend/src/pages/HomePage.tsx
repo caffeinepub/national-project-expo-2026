@@ -1,13 +1,15 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "@tanstack/react-router";
 import { ArrowRight, Calendar, Clock, Users } from "lucide-react";
 import { motion } from "motion/react";
 import { CountdownBlock, useCountdown } from "../components/CountdownBlock";
-import { useRegistrationCount } from "../hooks/useQueries";
+import { useEventInfo, useRegistrationCount } from "../hooks/useQueries";
 
 export default function HomePage() {
   const { data: regCount } = useRegistrationCount();
+  const { data: eventInfo, isLoading: eventLoading } = useEventInfo();
   const countdown = useCountdown();
   const router = useRouter();
 
@@ -42,7 +44,7 @@ export default function HomePage() {
           >
             <Badge className="mb-6 bg-primary/15 text-primary border-primary/40 px-4 py-1.5 text-xs font-bold uppercase tracking-widest">
               <Calendar className="w-3.5 h-3.5 mr-2" />
-              April 15, 2026 · National Level Event
+              {eventInfo?.eventDate || "April 15, 2026"} · National Level Event
             </Badge>
           </motion.div>
 
@@ -68,19 +70,25 @@ export default function HomePage() {
               Organized by:
             </span>
             <span className="text-base sm:text-lg text-primary font-bold">
-              Department of Electronics and Communication Engineering
+              {eventInfo?.organizer ||
+                "Department of Electronics and Communication Engineering"}
             </span>
           </motion.div>
 
-          {/* College name — EDIT THIS */}
+          {/* College name */}
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25 }}
             className="text-base sm:text-lg text-foreground/75 mb-6 font-medium"
           >
-            {/* TODO: Replace with your college name */}
-            <span className="text-accent">[Add Your College Name]</span>
+            {eventLoading ? (
+              <Skeleton className="h-6 w-64 rounded-md" />
+            ) : (
+              <span className="text-accent">
+                {eventInfo?.college || "[Add Your College Name]"}
+              </span>
+            )}
           </motion.p>
 
           {/* Description */}
@@ -90,9 +98,8 @@ export default function HomePage() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-base sm:text-lg text-muted-foreground max-w-2xl mb-10 leading-relaxed"
           >
-            Showcase your innovation. Align with UN SDGs. Compete at the
-            national level. A 3-level rigorous screening ensures only the most
-            impactful projects shine at the Final Expo.
+            {eventInfo?.description ||
+              "Showcase your innovation. Align with UN SDGs. Compete at the national level. A 3-level rigorous screening ensures only the most impactful projects shine at the Final Expo."}
           </motion.p>
 
           {/* CTA Buttons */}
