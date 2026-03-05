@@ -1,27 +1,23 @@
 # National Project Expo 2026
 
 ## Current State
-The app has a full admin panel at `/admin` with tabs for Dashboard, Event Info, Timeline, Domains, Contacts, and Registrations. Admin access uses Internet Identity login + an auto-activate flow (`AdminSetupScreen`) that calls `_initializeAccessControlWithSecret("")` to make the first logged-in user an admin. The designated admin email is `athiakash1977@gmail.com` (displayed in UI). There is no verification code step.
+Multi-page event website with Home, About, Domains, Timeline, Registration, Screening, and Contact pages. Admin dashboard at `/admin` uses a frontend password (`Akash@1206`) to gate access. However, all backend write functions (updateEventInfo, addDomain, updateDomain, deleteDomain, addTimelineStage, etc.) use `AccessControl.isAdmin` which requires Internet Identity — so all admin save attempts fail with "Unauthorized" because the frontend password login does not authenticate with Internet Identity.
 
 ## Requested Changes (Diff)
 
 ### Add
-- A verification code step during admin setup/first-time login
-- Backend: a `generateAdminVerificationCode()` function that generates a 6-digit code, stores it, and returns it only if no admin has been claimed yet
-- Backend: a `claimAdminWithCode(code: Text)` function that checks the submitted code matches the stored one and then grants admin role to the caller
-- Frontend: `AdminSetupScreen` replaced with a two-step verification flow:
-  1. Step 1: Show a generated 6-digit verification code on screen (simulating "your code has been sent") and prompt the user to enter it
-  2. Step 2: On correct code entry, call `claimAdminWithCode` to grant admin access
-  3. If code is wrong, show an error and allow retry
+- Nothing new
 
 ### Modify
-- `AdminSetupScreen` component: replace auto-activate logic with the verification code UI flow
-- Backend `main.mo`: add `generateAdminVerificationCode` and `claimAdminWithCode` endpoints
+- Backend: Remove all `AccessControl.isAdmin` checks from content management functions (updateEventInfo, addDomain, updateDomain, deleteDomain, addTimelineStage, updateTimelineStage, deleteTimelineStage, addContactInfo, updateContactInfo, deleteContactInfo). These should be open public functions — the frontend password already guards access to those operations.
+- Backend: Remove the authorization mixin entirely since it's no longer needed.
 
 ### Remove
-- The auto-activate call to `_initializeAccessControlWithSecret("")` from `AdminSetupScreen`
+- Backend: Remove import of MixinAuthorization and AccessControl modules.
+- Backend: Remove all admin permission checks on write operations.
 
 ## Implementation Plan
-1. Update `main.mo`: add stable var to store verification code, add `generateAdminVerificationCode` (generates/returns code if admin not yet claimed), add `claimAdminWithCode` (validates code, calls `_initializeAccessControlWithSecret` internally to grant admin)
-2. Regenerate backend types (`backend.d.ts`)
-3. Update `AdminPage.tsx`: replace `AdminSetupScreen` with a verification-code-entry UI flow that first fetches the code, displays it, asks user to type it in, then submits to `claimAdminWithCode`
+1. Regenerate backend Motoko code without authorization module — all write functions are open public endpoints, protected only by the frontend admin password.
+2. Keep all existing data types and query functions unchanged.
+3. Keep registerTeam open to all (no auth required).
+4. Deploy updated backend and frontend.

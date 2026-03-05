@@ -22,15 +22,17 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Calendar,
   ClipboardList,
   Edit2,
   Globe,
   Info,
+  KeyRound,
   Layers,
   Loader2,
-  LogIn,
+  LogOut,
   Mail,
   Phone,
   Plus,
@@ -39,6 +41,7 @@ import {
   Users,
 } from "lucide-react";
 import { motion } from "motion/react";
+import type React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import type {
@@ -47,8 +50,6 @@ import type {
   EventInfo,
   TimelineStage,
 } from "../backend.d";
-import { useActor } from "../hooks/useActor";
-import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useAddContactInfo,
   useAddDomain,
@@ -61,7 +62,6 @@ import {
   useDeleteDomain,
   useDeleteTimelineStage,
   useEventInfo,
-  useIsCallerAdmin,
   useRegistrationCount,
   useUpdateContactInfo,
   useUpdateDomain,
@@ -69,10 +69,36 @@ import {
   useUpdateTimelineStage,
 } from "../hooks/useQueries";
 
-// ─── Login Screen ─────────────────────────────────────────────────────────────
+// ─── Admin Password Login ─────────────────────────────────────────────────────
 
-function AdminLoginScreen() {
-  const { login, isLoggingIn } = useInternetIdentity();
+// Admin password (hardcoded for direct access)
+const ADMIN_PASSWORD = "Akash@1206";
+
+function AdminPasswordLogin({ onSuccess }: { onSuccess: () => void }) {
+  const [password, setPassword] = useState("");
+  const [verifying, setVerifying] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!password.trim() || verifying) return;
+
+    setErrorMsg(null);
+    setVerifying(true);
+
+    // Direct client-side password check — no backend round-trip needed
+    setTimeout(() => {
+      if (password.trim() === ADMIN_PASSWORD) {
+        sessionStorage.setItem("caffeineAdminToken", password.trim());
+        toast.success("Admin access granted!");
+        onSuccess();
+      } else {
+        setVerifying(false);
+        setErrorMsg("Incorrect password. Please try again.");
+      }
+    }, 400);
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background pt-16">
       <div className="absolute inset-0 tech-grid-bg opacity-40 pointer-events-none" />
@@ -85,162 +111,84 @@ function AdminLoginScreen() {
         <Card className="glass-card border-primary/25">
           <CardHeader className="pb-4 text-center">
             <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
-              <ShieldCheck className="w-7 h-7 text-primary" />
+              {verifying ? (
+                <Loader2 className="w-7 h-7 text-primary animate-spin" />
+              ) : (
+                <KeyRound className="w-7 h-7 text-primary" />
+              )}
             </div>
             <CardTitle className="font-display text-2xl font-black text-foreground">
-              Admin Access
+              Admin Login
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-              Log in with Internet Identity to manage event content, domains,
-              timeline, and contacts.
+              {verifying
+                ? "Verifying your password, please wait…"
+                : "Enter your admin password to manage the event website."}
             </p>
           </CardHeader>
-          <CardContent className="pt-2">
-            <Button
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-emerald font-display font-bold text-base py-3 gap-2"
-              onClick={() => login()}
-              disabled={isLoggingIn}
-              data-ocid="admin.login.button"
-            >
-              {isLoggingIn ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Connecting…
-                </>
-              ) : (
-                <>
-                  <LogIn className="w-4 h-4" />
-                  Login with Internet Identity
-                </>
-              )}
-            </Button>
-            <p className="text-xs text-muted-foreground text-center mt-4">
-              Only the designated admin account can access this panel.
-            </p>
-            <div className="mt-3 rounded-lg bg-primary/8 border border-primary/20 px-3 py-2.5 flex items-center gap-2">
+          <CardContent className="pt-0 space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label
+                  htmlFor="admin-password"
+                  className="text-sm font-medium text-foreground/80"
+                >
+                  Admin Password
+                </Label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setErrorMsg(null);
+                  }}
+                  placeholder="Enter admin password"
+                  className="bg-muted/30 border-border/60 focus:border-primary/50"
+                  autoComplete="current-password"
+                  disabled={verifying}
+                  data-ocid="admin.login.password_input"
+                />
+                {errorMsg && (
+                  <p
+                    className="text-xs text-destructive mt-1 flex items-center gap-1"
+                    data-ocid="admin.login.error_state"
+                  >
+                    {errorMsg}
+                  </p>
+                )}
+              </div>
+
+              <Button
+                type="submit"
+                disabled={verifying || !password.trim()}
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-emerald font-display font-bold text-base py-3 gap-2"
+                data-ocid="admin.login.primary_button"
+              >
+                {verifying ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Verifying…
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-4 h-4" />
+                    Login
+                  </>
+                )}
+              </Button>
+            </form>
+
+            <div className="rounded-lg bg-primary/8 border border-primary/20 px-3 py-2.5 flex items-center gap-2">
               <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
               <p className="text-xs text-primary/80 leading-relaxed">
                 <span className="font-semibold text-primary">
-                  Designated admin:
+                  Admin account:
                 </span>{" "}
                 athiakash1977@gmail.com
               </p>
             </div>
           </CardContent>
-        </Card>
-      </motion.div>
-    </div>
-  );
-}
-
-// ─── Admin Setup Screen (auto-claim) ─────────────────────────────────────────
-
-function AdminSetupScreen({ onSuccess }: { onSuccess?: () => void }) {
-  const { actor, isFetching } = useActor();
-  const [status, setStatus] = useState<"claiming" | "denied" | "done">(
-    "claiming",
-  );
-
-  useEffect(() => {
-    if (isFetching || !actor || status !== "claiming") return;
-
-    async function autoClaim() {
-      if (!actor) return;
-      try {
-        // Register the caller — if they're the first user and the backend token
-        // is empty, they get #admin; otherwise they get #user.
-        await (
-          actor as unknown as {
-            _initializeAccessControlWithSecret(secret: string): Promise<void>;
-          }
-        )._initializeAccessControlWithSecret("");
-
-        // Now re-check whether we actually got admin
-        let gotAdmin = false;
-        try {
-          gotAdmin = await actor.isCallerAdmin();
-        } catch {
-          gotAdmin = false;
-        }
-
-        if (gotAdmin) {
-          setStatus("done");
-          toast.success("Admin access granted! Loading dashboard…");
-          setTimeout(() => onSuccess?.(), 600);
-        } else {
-          setStatus("denied");
-        }
-      } catch {
-        // _initializeAccessControlWithSecret threw — admin already claimed by
-        // someone else, or the secret doesn't match.
-        setStatus("denied");
-      }
-    }
-
-    autoClaim();
-  }, [actor, isFetching, status, onSuccess]);
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background pt-16">
-      <div className="absolute inset-0 tech-grid-bg opacity-40 pointer-events-none" />
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.55 }}
-        className="relative z-10 w-full max-w-md mx-4"
-      >
-        <Card className="glass-card border-primary/25">
-          <CardHeader className="pb-4 text-center">
-            <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
-              {status === "denied" ? (
-                <ShieldCheck className="w-7 h-7 text-destructive" />
-              ) : status === "done" ? (
-                <ShieldCheck className="w-7 h-7 text-primary" />
-              ) : (
-                <Loader2 className="w-7 h-7 text-primary animate-spin" />
-              )}
-            </div>
-            <CardTitle className="font-display text-2xl font-black text-foreground">
-              {status === "denied"
-                ? "Access Denied"
-                : status === "done"
-                  ? "Access Granted!"
-                  : "Activating Admin Access…"}
-            </CardTitle>
-            {status === "claiming" && (
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                Please wait while we configure your admin account.
-              </p>
-            )}
-            {status === "done" && (
-              <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-                Loading your dashboard…
-              </p>
-            )}
-          </CardHeader>
-
-          {status === "denied" && (
-            <CardContent className="pt-0 space-y-4">
-              <div
-                className="rounded-lg bg-destructive/10 border border-destructive/30 px-4 py-3"
-                data-ocid="admin.setup.error_state"
-              >
-                <p className="text-sm text-destructive leading-relaxed text-center">
-                  Admin access has already been claimed by another account. Only
-                  the designated admin can manage this site.
-                </p>
-              </div>
-              <div className="rounded-lg bg-primary/8 border border-primary/20 px-3 py-2.5 flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
-                <p className="text-xs text-primary/80 leading-relaxed">
-                  <span className="font-semibold text-primary">
-                    Designated admin:
-                  </span>{" "}
-                  athiakash1977@gmail.com
-                </p>
-              </div>
-            </CardContent>
-          )}
         </Card>
       </motion.div>
     </div>
@@ -1442,9 +1390,9 @@ function RegistrationsTab() {
   );
 }
 
-// ─── Admin Panel (main) ───────────────────────────────────────────────────────
+// ─── Admin Panel (dashboard) ──────────────────────────────────────────────────
 
-function AdminPanel() {
+function AdminPanel({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="min-h-screen bg-background pt-16">
       <div className="absolute inset-0 tech-grid-bg opacity-25 pointer-events-none" />
@@ -1456,18 +1404,30 @@ function AdminPanel() {
           transition={{ duration: 0.45 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center">
-              <ShieldCheck className="w-5 h-5 text-primary" />
+          <div className="flex items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/15 border border-primary/30 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <h1 className="font-display text-2xl font-black text-foreground">
+                  Admin Dashboard
+                </h1>
+                <p className="text-xs text-muted-foreground">
+                  Managed by athiakash1977@gmail.com
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-display text-2xl font-black text-foreground">
-                Admin Dashboard
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                Managed by athiakash1977@gmail.com
-              </p>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onLogout}
+              className="text-muted-foreground hover:text-foreground hover:bg-destructive/10 gap-1.5 shrink-0"
+              data-ocid="admin.logout.button"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Logout</span>
+            </Button>
           </div>
         </motion.div>
 
@@ -1551,42 +1511,51 @@ function AdminPanel() {
 // ─── Main AdminPage ───────────────────────────────────────────────────────────
 
 export default function AdminPage() {
-  const { identity } = useInternetIdentity();
-  const isLoggedIn = !!identity;
-  const {
-    data: isAdmin,
-    isLoading: checkingAdmin,
-    refetch: refetchAdmin,
-  } = useIsCallerAdmin();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
+  const queryClient = useQueryClient();
 
-  // Not logged in
-  if (!isLoggedIn) {
-    return <AdminLoginScreen />;
+  // On mount: check if the stored token matches the admin password
+  useEffect(() => {
+    const storedToken = sessionStorage.getItem("caffeineAdminToken");
+    if (storedToken === ADMIN_PASSWORD) {
+      setIsAdmin(true);
+    } else if (storedToken) {
+      // Stale/invalid token — clear it
+      sessionStorage.removeItem("caffeineAdminToken");
+    }
+    setCheckingSession(false);
+  }, []);
+
+  function handleLogout() {
+    sessionStorage.removeItem("caffeineAdminToken");
+    queryClient.clear();
+    setIsAdmin(false);
+    toast.success("Logged out successfully.");
   }
 
-  // Checking admin status
-  if (checkingAdmin) {
+  // Show loading while checking existing session
+  if (checkingSession) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background pt-16">
         <div className="flex items-center gap-3 text-muted-foreground">
           <Loader2 className="w-5 h-5 animate-spin text-primary" />
-          <span className="font-medium">Verifying admin access…</span>
+          <span className="font-medium">Checking session…</span>
         </div>
       </div>
     );
   }
 
-  // Not admin — show setup screen to auto-claim, or access-denied fallback
-  if (!isAdmin) {
-    return (
-      <AdminSetupScreen
-        onSuccess={() => {
-          refetchAdmin();
-        }}
-      />
-    );
+  if (isAdmin) {
+    return <AdminPanel onLogout={handleLogout} />;
   }
 
-  // Admin — show full panel
-  return <AdminPanel />;
+  return (
+    <AdminPasswordLogin
+      onSuccess={() => {
+        setIsAdmin(true);
+        setCheckingSession(false);
+      }}
+    />
+  );
 }
