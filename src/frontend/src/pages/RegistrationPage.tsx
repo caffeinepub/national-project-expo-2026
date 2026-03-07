@@ -3,8 +3,6 @@ import { ExternalLink } from "lucide-react";
 import { motion } from "motion/react";
 
 const GOOGLE_FORM_URL = "https://forms.gle/VixdRSqbE5HD34nw7";
-const GOOGLE_FORM_EMBED_URL =
-  "https://docs.google.com/forms/d/e/1FAIpQLSfzrLcpOijqMD2Y5bfYyMPSmCwFlP6DFZNxDdMDJ8dL5XTGKQ/viewform?embedded=true";
 
 export default function RegistrationPage() {
   return (
@@ -41,43 +39,15 @@ export default function RegistrationPage() {
           </a>
         </motion.div>
 
-        {/* Embedded Google Form */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="glass-card rounded-3xl overflow-hidden"
-          data-ocid="registration.form.panel"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-xs text-muted-foreground text-center mt-2 leading-relaxed"
         >
-          <iframe
-            src={GOOGLE_FORM_EMBED_URL}
-            title="Innovativelink-Expo 2K26 Registration Form"
-            width="100%"
-            height="900"
-            frameBorder="0"
-            marginHeight={0}
-            marginWidth={0}
-            className="w-full"
-            style={{ minHeight: 900 }}
-          >
-            Loading form...
-          </iframe>
-        </motion.div>
-
-        <p className="text-xs text-muted-foreground text-center mt-4 leading-relaxed">
-          All responses are collected and saved via Google Forms. If the form
-          does not load,{" "}
-          <a
-            href={GOOGLE_FORM_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline hover:no-underline"
-          >
-            click here to open it directly
-          </a>
-          .
-        </p>
+          All responses are collected and saved via Google Forms.
+        </motion.p>
       </div>
     </section>
   );

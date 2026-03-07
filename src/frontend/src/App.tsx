@@ -8,12 +8,14 @@ import {
 } from "@tanstack/react-router";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import WhatsAppButton from "./components/WhatsAppButton";
 import AboutPage from "./pages/AboutPage";
 import AdminPage from "./pages/AdminPage";
 import ContactPage from "./pages/ContactPage";
 import DomainsPage from "./pages/DomainsPage";
 import HomePage from "./pages/HomePage";
 import RegistrationPage from "./pages/RegistrationPage";
+import RulesPage from "./pages/RulesPage";
 import ScreeningPage from "./pages/ScreeningPage";
 import TimelinePage from "./pages/TimelinePage";
 
@@ -28,6 +30,7 @@ function RootLayout() {
         <Outlet />
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 }
@@ -80,6 +83,12 @@ const contactRoute = createRoute({
   component: ContactPage,
 });
 
+const rulesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/rules",
+  component: RulesPage,
+});
+
 const adminRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/admin",
@@ -93,6 +102,7 @@ const routeTree = rootRoute.addChildren([
   timelineRoute,
   registerRoute,
   screeningRoute,
+  rulesRoute,
   contactRoute,
   adminRoute,
 ]);
