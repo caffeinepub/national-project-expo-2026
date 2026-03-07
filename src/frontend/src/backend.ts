@@ -89,11 +89,9 @@ export class ExternalBlob {
         return this;
     }
 }
-export interface ContactInfo {
-    name: string;
-    role: string;
-    email: string;
-    phoneNumber: string;
+export interface TimelineStage {
+    date: string;
+    stageName: string;
 }
 export interface EventInfo {
     organizer: string;
@@ -101,14 +99,6 @@ export interface EventInfo {
     description: string;
     college: string;
     eventDate: string;
-}
-export interface Domain {
-    name: string;
-    description: string;
-}
-export interface TimelineStage {
-    date: string;
-    stageName: string;
 }
 export interface Registration {
     domain: string;
@@ -122,6 +112,19 @@ export interface Registration {
     phoneNumber: string;
     yearOfStudy: string;
     teamLeaderName: string;
+}
+export interface ContactInfo {
+    name: string;
+    role: string;
+    email: string;
+    phoneNumber: string;
+}
+export interface Domain {
+    name: string;
+    description: string;
+}
+export interface UserProfile {
+    name: string;
 }
 export enum UserRole {
     admin = "admin",
@@ -141,18 +144,22 @@ export interface backendInterface {
     getAllDomains(): Promise<Array<Domain>>;
     getAllRegistrations(): Promise<Array<Registration>>;
     getAllTimelineStages(): Promise<Array<TimelineStage>>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getEventInfo(): Promise<EventInfo>;
     getRegistration(id: string): Promise<Registration>;
     getRegistrationCount(): Promise<bigint>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     registerTeam(registration: Registration): Promise<string>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    setRegisteredTeamsCount(count: bigint): Promise<string>;
     updateContactInfo(oldName: string, contact: ContactInfo): Promise<string>;
     updateDomain(oldName: string, domain: Domain): Promise<string>;
     updateEventInfo(info: EventInfo): Promise<string>;
     updateTimelineStage(oldName: string, stage: TimelineStage): Promise<string>;
 }
-import type { UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -323,18 +330,32 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getCallerUserProfile(): Promise<UserProfile | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCallerUserProfile();
+                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerUserProfile();
+            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async getCallerUserRole(): Promise<UserRole> {
         if (this.processError) {
             try {
                 const result = await this.actor.getCallerUserRole();
-                return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
+                return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
             const result = await this.actor.getCallerUserRole();
-            return from_candid_UserRole_n3(this._uploadFile, this._downloadFile, result);
+            return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
         }
     }
     async getEventInfo(): Promise<EventInfo> {
@@ -379,6 +400,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUserProfile(arg0);
+                return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUserProfile(arg0);
+            return from_candid_opt_n3(this._uploadFile, this._downloadFile, result);
+        }
+    }
     async isCallerAdmin(): Promise<boolean> {
         if (this.processError) {
             try {
@@ -404,6 +439,34 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.registerTeam(arg0);
+            return result;
+        }
+    }
+    async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveCallerUserProfile(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async setRegisteredTeamsCount(arg0: bigint): Promise<string> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.setRegisteredTeamsCount(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.setRegisteredTeamsCount(arg0);
             return result;
         }
     }
@@ -464,10 +527,13 @@ export class Backend implements backendInterface {
         }
     }
 }
-function from_candid_UserRole_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
-    return from_candid_variant_n4(_uploadFile, _downloadFile, value);
+function from_candid_UserRole_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n5(_uploadFile, _downloadFile, value);
 }
-function from_candid_variant_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+function from_candid_opt_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     admin: null;
 } | {
     user: null;

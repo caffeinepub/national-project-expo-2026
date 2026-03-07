@@ -33,6 +33,20 @@ export function useRegistrationCount() {
   });
 }
 
+export function useSetRegisteredTeamsCount() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (count: bigint) => {
+      if (!actor) throw new Error("Not connected");
+      return actor.setRegisteredTeamsCount(count);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["registrationCount"] });
+    },
+  });
+}
+
 export function useAllDomains() {
   const { actor, isFetching } = useActor();
   return useQuery<Domain[]>({

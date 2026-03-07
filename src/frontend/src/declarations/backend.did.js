@@ -40,6 +40,7 @@ export const TimelineStage = IDL.Record({
   'date' : IDL.Text,
   'stageName' : IDL.Text,
 });
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 export const EventInfo = IDL.Record({
   'organizer' : IDL.Text,
   'name' : IDL.Text,
@@ -61,12 +62,20 @@ export const idlService = IDL.Service({
   'getAllDomains' : IDL.Func([], [IDL.Vec(Domain)], ['query']),
   'getAllRegistrations' : IDL.Func([], [IDL.Vec(Registration)], ['query']),
   'getAllTimelineStages' : IDL.Func([], [IDL.Vec(TimelineStage)], ['query']),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getEventInfo' : IDL.Func([], [EventInfo], ['query']),
   'getRegistration' : IDL.Func([IDL.Text], [Registration], ['query']),
   'getRegistrationCount' : IDL.Func([], [IDL.Nat], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'registerTeam' : IDL.Func([Registration], [IDL.Text], []),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'setRegisteredTeamsCount' : IDL.Func([IDL.Nat], [IDL.Text], []),
   'updateContactInfo' : IDL.Func([IDL.Text, ContactInfo], [IDL.Text], []),
   'updateDomain' : IDL.Func([IDL.Text, Domain], [IDL.Text], []),
   'updateEventInfo' : IDL.Func([EventInfo], [IDL.Text], []),
@@ -105,6 +114,7 @@ export const idlFactory = ({ IDL }) => {
     'date' : IDL.Text,
     'stageName' : IDL.Text,
   });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
   const EventInfo = IDL.Record({
     'organizer' : IDL.Text,
     'name' : IDL.Text,
@@ -126,12 +136,20 @@ export const idlFactory = ({ IDL }) => {
     'getAllDomains' : IDL.Func([], [IDL.Vec(Domain)], ['query']),
     'getAllRegistrations' : IDL.Func([], [IDL.Vec(Registration)], ['query']),
     'getAllTimelineStages' : IDL.Func([], [IDL.Vec(TimelineStage)], ['query']),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getEventInfo' : IDL.Func([], [EventInfo], ['query']),
     'getRegistration' : IDL.Func([IDL.Text], [Registration], ['query']),
     'getRegistrationCount' : IDL.Func([], [IDL.Nat], ['query']),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'registerTeam' : IDL.Func([Registration], [IDL.Text], []),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'setRegisteredTeamsCount' : IDL.Func([IDL.Nat], [IDL.Text], []),
     'updateContactInfo' : IDL.Func([IDL.Text, ContactInfo], [IDL.Text], []),
     'updateDomain' : IDL.Func([IDL.Text, Domain], [IDL.Text], []),
     'updateEventInfo' : IDL.Func([EventInfo], [IDL.Text], []),

@@ -38,6 +38,7 @@ export interface Registration {
   'teamLeaderName' : string,
 }
 export interface TimelineStage { 'date' : string, 'stageName' : string }
+export interface UserProfile { 'name' : string }
 export type UserRole = { 'admin' : null } |
   { 'user' : null } |
   { 'guest' : null };
@@ -54,12 +55,16 @@ export interface _SERVICE {
   'getAllDomains' : ActorMethod<[], Array<Domain>>,
   'getAllRegistrations' : ActorMethod<[], Array<Registration>>,
   'getAllTimelineStages' : ActorMethod<[], Array<TimelineStage>>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getEventInfo' : ActorMethod<[], EventInfo>,
   'getRegistration' : ActorMethod<[string], Registration>,
   'getRegistrationCount' : ActorMethod<[], bigint>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'registerTeam' : ActorMethod<[Registration], string>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'setRegisteredTeamsCount' : ActorMethod<[bigint], string>,
   'updateContactInfo' : ActorMethod<[string, ContactInfo], string>,
   'updateDomain' : ActorMethod<[string, Domain], string>,
   'updateEventInfo' : ActorMethod<[EventInfo], string>,

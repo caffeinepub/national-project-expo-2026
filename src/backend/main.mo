@@ -76,6 +76,31 @@ actor {
 
   var domainCounter = 0;
 
+  // Manually adjustable registered teams count.
+  var manualRegisteredTeamsCount : Nat = 0;
+
+  // User Profile Management Functions
+  public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view profiles");
+    };
+    userProfiles.get(caller);
+  };
+
+  public query ({ caller }) func getUserProfile(user : Principal) : async ?UserProfile {
+    if (caller != user and not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Can only view your own profile");
+    };
+    userProfiles.get(user);
+  };
+
+  public shared ({ caller }) func saveCallerUserProfile(profile : UserProfile) : async () {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can save profiles");
+    };
+    userProfiles.add(caller, profile);
+  };
+
   // Register Team - Open to All (including guests)
   public shared ({ caller }) func registerTeam(registration : Registration) : async Text {
     let id = registration.email;
@@ -222,8 +247,17 @@ actor {
     "Contact deleted";
   };
 
-  // Get registration count - Public (no auth check)
+  // Get registration count - Public (returns manual count)
   public query ({ caller }) func getRegistrationCount() : async Nat {
-    registrations.size();
+    manualRegisteredTeamsCount;
+  };
+
+  // Set registration count - Admin only
+  public shared ({ caller }) func setRegisteredTeamsCount(count : Nat) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #admin))) {
+      Runtime.trap("Unauthorized: Only admins can update the registered teams count");
+    };
+    manualRegisteredTeamsCount := count;
+    "Registered teams count updated";
   };
 };

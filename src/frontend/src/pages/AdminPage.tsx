@@ -67,6 +67,7 @@ import {
   useEventInfo,
   useIsCallerAdmin,
   useRegistrationCount,
+  useSetRegisteredTeamsCount,
   useUpdateContactInfo,
   useUpdateDomain,
   useUpdateEventInfo,
@@ -288,16 +289,50 @@ function AdminLoginScreen({ onLogin }: { onLogin: () => void }) {
 
 // ─── Dashboard Tab ────────────────────────────────────────────────────────────
 
-function DashboardTab() {
+function DashboardTab({ onUnauthorized }: { onUnauthorized: () => void }) {
   const { data: regCount } = useRegistrationCount();
   const { data: domains } = useAllDomains();
   const { data: timeline } = useAllTimelineStages();
   const { data: contacts } = useAllContacts();
   const { data: registrations } = useAllRegistrations();
+  const setCountMutation = useSetRegisteredTeamsCount();
+
+  const [countInput, setCountInput] = useState(
+    regCount !== undefined ? regCount.toString() : "0",
+  );
+  const [countInitialized, setCountInitialized] = useState(false);
+
+  if (regCount !== undefined && !countInitialized) {
+    setCountInput(regCount.toString());
+    setCountInitialized(true);
+  }
+
+  async function handleSaveCount() {
+    const parsed = Number.parseInt(countInput, 10);
+    if (Number.isNaN(parsed) || parsed < 0) {
+      toast.error("Please enter a valid number.");
+      return;
+    }
+    try {
+      await setCountMutation.mutateAsync(BigInt(parsed));
+      toast.success("Registered teams count updated!");
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        (err.message.includes("Unauthorized") ||
+          err.message.includes("unauthorized"))
+      ) {
+        onUnauthorized();
+        toast.error("Session expired. Please log in again.");
+      } else {
+        toast.error("Failed to update count.");
+      }
+    }
+  }
 
   const stats = [
     {
-      label: "Total Registrations",
+      label: "Registered Teams",
       value: regCount !== undefined ? regCount.toString() : "—",
       icon: Users,
       color: "text-primary",
@@ -355,6 +390,44 @@ function DashboardTab() {
           </Card>
         ))}
       </div>
+
+      {/* Manual registered teams count updater */}
+      <Card className="glass-card border-primary/20">
+        <CardHeader className="pb-3">
+          <CardTitle className="font-display text-sm font-bold text-primary flex items-center gap-2">
+            <Users className="w-4 h-4" />
+            Update Registered Teams Count
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+            Since registrations are collected via Google Form, enter the current
+            number of registered teams here to display it on the home page.
+          </p>
+          <div className="flex gap-3 items-center">
+            <Input
+              type="number"
+              min={0}
+              value={countInput}
+              onChange={(e) => setCountInput(e.target.value)}
+              placeholder="e.g. 42"
+              className="bg-muted/30 border-border/60 focus:border-primary/50 w-36"
+              data-ocid="admin.dashboard.count_input"
+            />
+            <Button
+              onClick={handleSaveCount}
+              disabled={setCountMutation.isPending}
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-display font-bold gap-1.5 shrink-0"
+              data-ocid="admin.dashboard.save_count_button"
+            >
+              {setCountMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : null}
+              {setCountMutation.isPending ? "Saving…" : "Save Count"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Recent registrations preview */}
       {registrations && registrations.length > 0 && (
@@ -1582,7 +1655,7 @@ function AdminPanel({
           </TabsList>
 
           <TabsContent value="dashboard">
-            <DashboardTab />
+            <DashboardTab onUnauthorized={onUnauthorized} />
           </TabsContent>
           <TabsContent value="event_info">
             <EventInfoTab onUnauthorized={onUnauthorized} />
