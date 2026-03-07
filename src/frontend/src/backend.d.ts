@@ -7,9 +7,11 @@ export interface None {
     __kind__: "None";
 }
 export type Option<T> = Some<T> | None;
-export interface TimelineStage {
-    date: string;
-    stageName: string;
+export interface ContactInfo {
+    name: string;
+    role: string;
+    email: string;
+    phoneNumber: string;
 }
 export interface EventInfo {
     organizer: string;
@@ -17,6 +19,14 @@ export interface EventInfo {
     description: string;
     college: string;
     eventDate: string;
+}
+export interface Domain {
+    name: string;
+    description: string;
+}
+export interface TimelineStage {
+    date: string;
+    stageName: string;
 }
 export interface Registration {
     domain: string;
@@ -30,19 +40,6 @@ export interface Registration {
     phoneNumber: string;
     yearOfStudy: string;
     teamLeaderName: string;
-}
-export interface ContactInfo {
-    name: string;
-    role: string;
-    email: string;
-    phoneNumber: string;
-}
-export interface Domain {
-    name: string;
-    description: string;
-}
-export interface UserProfile {
-    name: string;
 }
 export enum UserRole {
     admin = "admin",
@@ -61,15 +58,12 @@ export interface backendInterface {
     getAllDomains(): Promise<Array<Domain>>;
     getAllRegistrations(): Promise<Array<Registration>>;
     getAllTimelineStages(): Promise<Array<TimelineStage>>;
-    getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getEventInfo(): Promise<EventInfo>;
     getRegistration(id: string): Promise<Registration>;
     getRegistrationCount(): Promise<bigint>;
-    getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     registerTeam(registration: Registration): Promise<string>;
-    saveCallerUserProfile(profile: UserProfile): Promise<void>;
     updateContactInfo(oldName: string, contact: ContactInfo): Promise<string>;
     updateDomain(oldName: string, domain: Domain): Promise<string>;
     updateEventInfo(info: EventInfo): Promise<string>;

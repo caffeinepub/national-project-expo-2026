@@ -12,10 +12,158 @@ importers:
         specifier: ^0.34.4
         version: 0.34.4
 
+  frontend:
+    dependencies:
+      '@dfinity/agent':
+        specifier: ~3.3.0
+        version: 3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0)
+      '@dfinity/auth-client':
+        specifier: ~3.3.0
+        version: 3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/identity@3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0))(@dfinity/principal@3.3.1)
+      '@dfinity/candid':
+        specifier: ~3.3.0
+        version: 3.3.1(@dfinity/principal@3.3.1)
+      '@dfinity/identity':
+        specifier: ~3.3.0
+        version: 3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0)
+      '@dfinity/principal':
+        specifier: ~3.3.0
+        version: 3.3.1
+      '@icp-sdk/core':
+        specifier: ~4.1.0
+        version: 4.1.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/identity-secp256k1@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0))(@dfinity/identity@3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0))(@dfinity/principal@3.3.1)
+      csstype:
+        specifier: 3.1.3
+        version: 3.1.3
+    devDependencies:
+      '@biomejs/biome':
+        specifier: ^1.9.0
+        version: 1.9.4
+      '@types/react':
+        specifier: ~19.1.0
+        version: 19.1.17
+      '@types/react-dom':
+        specifier: ~19.1.0
+        version: 19.1.11(@types/react@19.1.17)
+      '@types/three':
+        specifier: 0.176.0
+        version: 0.176.0
+
 packages:
+
+  '@biomejs/biome@1.9.4':
+    resolution: {integrity: sha512-1rkd7G70+o9KkTn5KLmDYXihGoTaIGO9PIIN2ZB7UJxFrWw04CZHPYiMRjYsaDvVV7hP1dYNRLxSANLaBFGpog==}
+    engines: {node: '>=14.21.3'}
+    hasBin: true
+
+  '@biomejs/cli-darwin-arm64@1.9.4':
+    resolution: {integrity: sha512-bFBsPWrNvkdKrNCYeAp+xo2HecOGPAy9WyNyB/jKnnedgzl4W4Hb9ZMzYNbf8dMCGmUdSavlYHiR01QaYR58cw==}
+    engines: {node: '>=14.21.3'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@biomejs/cli-darwin-x64@1.9.4':
+    resolution: {integrity: sha512-ngYBh/+bEedqkSevPVhLP4QfVPCpb+4BBe2p7Xs32dBgs7rh9nY2AIYUL6BgLw1JVXV8GlpKmb/hNiuIxfPfZg==}
+    engines: {node: '>=14.21.3'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@biomejs/cli-linux-arm64-musl@1.9.4':
+    resolution: {integrity: sha512-v665Ct9WCRjGa8+kTr0CzApU0+XXtRgwmzIf1SeKSGAv+2scAlW6JR5PMFo6FzqqZ64Po79cKODKf3/AAmECqA==}
+    engines: {node: '>=14.21.3'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@biomejs/cli-linux-arm64@1.9.4':
+    resolution: {integrity: sha512-fJIW0+LYujdjUgJJuwesP4EjIBl/N/TcOX3IvIHJQNsAqvV2CHIogsmA94BPG6jZATS4Hi+xv4SkBBQSt1N4/g==}
+    engines: {node: '>=14.21.3'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@biomejs/cli-linux-x64-musl@1.9.4':
+    resolution: {integrity: sha512-gEhi/jSBhZ2m6wjV530Yy8+fNqG8PAinM3oV7CyO+6c3CEh16Eizm21uHVsyVBEB6RIM8JHIl6AGYCv6Q6Q9Tg==}
+    engines: {node: '>=14.21.3'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@biomejs/cli-linux-x64@1.9.4':
+    resolution: {integrity: sha512-lRCJv/Vi3Vlwmbd6K+oQ0KhLHMAysN8lXoCI7XeHlxaajk06u7G+UsFSO01NAs5iYuWKmVZjmiOzJ0OJmGsMwg==}
+    engines: {node: '>=14.21.3'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@biomejs/cli-win32-arm64@1.9.4':
+    resolution: {integrity: sha512-tlbhLk+WXZmgwoIKwHIHEBZUwxml7bRJgk0X2sPyNR3S93cdRq6XulAZRQJ17FYGGzWne0fgrXBKpl7l4M87Hg==}
+    engines: {node: '>=14.21.3'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@biomejs/cli-win32-x64@1.9.4':
+    resolution: {integrity: sha512-8Y5wMhVIPaWe6jw2H+KlEm4wP/f7EW3810ZLmDlrEEy5KvBsb9ECEfu/kMWD484ijfQ8+nIi0giMgu9g1UAuuA==}
+    engines: {node: '>=14.21.3'}
+    cpu: [x64]
+    os: [win32]
+
+  '@dfinity/agent@3.3.1':
+    resolution: {integrity: sha512-U1zWIiCgJmxNet2NpKN+2UgOcO/OFC+FqGEpIsvu964eH7FeEMagmSZ5xTIsXSL9sN0mR7gY5Fuz+bv5XSBJQg==}
+    peerDependencies:
+      '@dfinity/candid': 3.3.1
+      '@dfinity/principal': 3.3.1
+      '@noble/hashes': ^1.8.0
+
+  '@dfinity/auth-client@3.3.1':
+    resolution: {integrity: sha512-Cxf8dlWzxG9mgRzEesuf4cRVCAMrIhlRKw54bc1CNceSobkhpo9Hbz4bSqD02zddKD+G69KAQR3z5r43wKi8CA==}
+    deprecated: This package has been deprecated. Its functionality is now part of `@icp-sdk/auth` (https://js.icp.build/auth), under the `client` submodule.
+    peerDependencies:
+      '@dfinity/agent': 3.3.1
+      '@dfinity/identity': 3.3.1
+      '@dfinity/principal': 3.3.1
+
+  '@dfinity/candid@3.3.1':
+    resolution: {integrity: sha512-BOvhZhQarrpA5ErwLwXW/M28nSx3e0ZlV0iyJ+MvH6SkFcZqATVBPA0rVn57uDtMFboT8TzlA3RoW+YBzHxLJQ==}
+    peerDependencies:
+      '@dfinity/principal': 3.3.1
+
+  '@dfinity/cbor@0.2.2':
+    resolution: {integrity: sha512-GPJpH73kDEKbUBdUjY80lz7cq9l0vm1h/7ppejPV6O0ZTqCLrYspssYvqjRmK4aNnJ/SKXsP0rg9LYX7zpegaA==}
+
+  '@dfinity/identity-secp256k1@3.3.1':
+    resolution: {integrity: sha512-rGgcCm9wLQkxuluPdfPcl1P/KrwehLmjVIXc1lEPE01C0H2YK4bofxYrxCnHQQl8a8Ioc1dkpOl7TBUtXTkKHw==}
+    peerDependencies:
+      '@dfinity/candid': 3.3.1
+      '@noble/curves': ^1.9.2
+      '@noble/hashes': ^1.8.0
+
+  '@dfinity/identity@3.3.1':
+    resolution: {integrity: sha512-c+Grr7Mc7RephqBzRpdtySDg1to9pitb0wakXSk8902yg3BVc5vAsmbA3S1WwriY8+AMB06Dy2IZl/9Hot/Yhw==}
+    peerDependencies:
+      '@dfinity/agent': 3.3.1
+      '@dfinity/candid': 3.3.1
+      '@dfinity/principal': 3.3.1
+      '@noble/curves': ^1.9.2
+      '@noble/hashes': ^1.8.0
+
+  '@dfinity/principal@3.3.1':
+    resolution: {integrity: sha512-UWloNRbDHSwVV/gec0CrtWm/cHODPgu+jgwn5iERheVwYCEp+yGXVIssUkJeN6wFxraqqCFcoBUvg7vtWM+GBg==}
+
+  '@dimforge/rapier3d-compat@0.12.0':
+    resolution: {integrity: sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow==}
 
   '@emnapi/runtime@1.6.0':
     resolution: {integrity: sha512-obtUmAHTMjll499P+D9A3axeJFlhdjOWdKUNs/U6QIGT7V5RjcUW1xToAzjvmgTSQhDbYn/NwfTRoJcQ2rNBxA==}
+
+  '@icp-sdk/core@4.1.1':
+    resolution: {integrity: sha512-IYWsRauSvmr3M3T85FPaRM9lhuIumavhmJVG69tiYYqQmayAt0X0veKSevO+vm9nzmymriYCOwXqi57NqYhufA==}
+    peerDependencies:
+      '@dfinity/agent': 3.3.1
+      '@dfinity/candid': 3.3.1
+      '@dfinity/identity': 3.3.1
+      '@dfinity/identity-secp256k1': 3.3.1
+      '@dfinity/principal': 3.3.1
 
   '@img/colour@1.0.0':
     resolution: {integrity: sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==}
@@ -157,9 +305,72 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@noble/curves@1.9.7':
+    resolution: {integrity: sha512-gbKGcRUYIjA3/zCCNaWDciTMFI0dCkvou3TL8Zmy5Nc7sJ47a0jtOeZoTaMxkuqRo9cRhjOdZJXegxYE5FN/xw==}
+    engines: {node: ^14.21.3 || >=16}
+
+  '@noble/hashes@1.8.0':
+    resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
+    engines: {node: ^14.21.3 || >=16}
+
+  '@scure/base@1.2.6':
+    resolution: {integrity: sha512-g/nm5FgUa//MCj1gV09zTJTaM6KBAHqLN907YVQqf7zC49+DcO4B1so4ZX07Ef10Twr6nuqYEH9GEggFXA4Fmg==}
+
+  '@scure/bip32@1.7.0':
+    resolution: {integrity: sha512-E4FFX/N3f4B80AKWp5dP6ow+flD1LQZo/w8UnLGYZO674jS6YnYeepycOOksv+vLPSpgN35wgKgy+ybfTb2SMw==}
+
+  '@scure/bip39@1.6.0':
+    resolution: {integrity: sha512-+lF0BbLiJNwVlev4eKelw1WWLaiKXw7sSl8T6FvBlWkdX+94aGJ4o8XjUdlyhTCjd8c+B3KT3JfS8P0bLRNU6A==}
+
+  '@tweenjs/tween.js@23.1.3':
+    resolution: {integrity: sha512-vJmvvwFxYuGnF2axRtPYocag6Clbb5YS7kLL+SO/TeVFzHqDIWrNKYtcsPMibjDx9O+bu+psAy9NKfWklassUA==}
+
+  '@types/react-dom@19.1.11':
+    resolution: {integrity: sha512-3BKc/yGdNTYQVVw4idqHtSOcFsgGuBbMveKCOgF8wQ5QtrYOc3jDIlzg3jef04zcXFIHLelyGlj0T+BJ8+KN+w==}
+    peerDependencies:
+      '@types/react': ^19.0.0
+
+  '@types/react@19.1.17':
+    resolution: {integrity: sha512-Qec1E3mhALmaspIrhWt9jkQMNdw6bReVu64mjvhbhq2NFPftLPVr+l1SZgmw/66WwBNpDh7ao5AT6gF5v41PFA==}
+
+  '@types/stats.js@0.17.4':
+    resolution: {integrity: sha512-jIBvWWShCvlBqBNIZt0KAshWpvSjhkwkEu4ZUcASoAvhmrgAUI2t1dXrjSL4xXVLB4FznPrIsX3nKXFl/Dt4vA==}
+
+  '@types/three@0.176.0':
+    resolution: {integrity: sha512-FwfPXxCqOtP7EdYMagCFePNKoG1AGBDUEVKtluv2BTVRpSt7b+X27xNsirPCTCqY1pGYsPUzaM3jgWP7dXSxlw==}
+
+  '@types/webxr@0.5.24':
+    resolution: {integrity: sha512-h8fgEd/DpoS9CBrjEQXR+dIDraopAEfu4wYVNY2tEPwk60stPWhvZMf4Foo5FakuQ7HFZoa8WceaWFervK2Ovg==}
+
+  '@webgpu/types@0.1.69':
+    resolution: {integrity: sha512-RPmm6kgRbI8e98zSD3RVACvnuktIja5+yLgDAkTmxLr90BEwdTXRQWNLF3ETTTyH/8mKhznZuN5AveXYFEsMGQ==}
+
+  asn1js@3.0.7:
+    resolution: {integrity: sha512-uLvq6KJu04qoQM6gvBfKFjlh6Gl0vOKQuR5cJMDHQkmwfMOQeN3F3SHCv9SNYSL+CRoHvOGFfllDlVz03GQjvQ==}
+    engines: {node: '>=12.0.0'}
+
+  csstype@3.1.3:
+    resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
+
   detect-libc@2.1.2:
     resolution: {integrity: sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==}
     engines: {node: '>=8'}
+
+  fflate@0.8.2:
+    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
+
+  idb@7.1.1:
+    resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
+
+  meshoptimizer@0.18.1:
+    resolution: {integrity: sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw==}
+
+  pvtsutils@1.3.6:
+    resolution: {integrity: sha512-PLgQXQ6H2FWCaeRak8vvk1GW462lMxB5s3Jm673N82zI4vqtVUPuZdffdZbPDFRoU8kAhItWFtPCWiPpp4/EDg==}
+
+  pvutils@1.1.5:
+    resolution: {integrity: sha512-KTqnxsgGiQ6ZAzZCVlJH5eOjSnvlyEgx1m8bkRJfOhmGRqfo5KLvmAlACQkrjEtOQ4B7wF9TdSLIs9O90MX9xA==}
+    engines: {node: '>=16.0.0'}
 
   semver@7.7.3:
     resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
@@ -175,10 +386,100 @@ packages:
 
 snapshots:
 
+  '@biomejs/biome@1.9.4':
+    optionalDependencies:
+      '@biomejs/cli-darwin-arm64': 1.9.4
+      '@biomejs/cli-darwin-x64': 1.9.4
+      '@biomejs/cli-linux-arm64': 1.9.4
+      '@biomejs/cli-linux-arm64-musl': 1.9.4
+      '@biomejs/cli-linux-x64': 1.9.4
+      '@biomejs/cli-linux-x64-musl': 1.9.4
+      '@biomejs/cli-win32-arm64': 1.9.4
+      '@biomejs/cli-win32-x64': 1.9.4
+
+  '@biomejs/cli-darwin-arm64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-darwin-x64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-linux-arm64-musl@1.9.4':
+    optional: true
+
+  '@biomejs/cli-linux-arm64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-linux-x64-musl@1.9.4':
+    optional: true
+
+  '@biomejs/cli-linux-x64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-win32-arm64@1.9.4':
+    optional: true
+
+  '@biomejs/cli-win32-x64@1.9.4':
+    optional: true
+
+  '@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0)':
+    dependencies:
+      '@dfinity/candid': 3.3.1(@dfinity/principal@3.3.1)
+      '@dfinity/cbor': 0.2.2
+      '@dfinity/principal': 3.3.1
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+
+  '@dfinity/auth-client@3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/identity@3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0))(@dfinity/principal@3.3.1)':
+    dependencies:
+      '@dfinity/agent': 3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0)
+      '@dfinity/identity': 3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0)
+      '@dfinity/principal': 3.3.1
+      idb: 7.1.1
+
+  '@dfinity/candid@3.3.1(@dfinity/principal@3.3.1)':
+    dependencies:
+      '@dfinity/principal': 3.3.1
+
+  '@dfinity/cbor@0.2.2': {}
+
+  '@dfinity/identity-secp256k1@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0)':
+    dependencies:
+      '@dfinity/agent': 3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0)
+      '@dfinity/candid': 3.3.1(@dfinity/principal@3.3.1)
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+      '@scure/bip32': 1.7.0
+      '@scure/bip39': 1.6.0
+      asn1js: 3.0.7
+    transitivePeerDependencies:
+      - '@dfinity/principal'
+
+  '@dfinity/identity@3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0)':
+    dependencies:
+      '@dfinity/agent': 3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0)
+      '@dfinity/candid': 3.3.1(@dfinity/principal@3.3.1)
+      '@dfinity/principal': 3.3.1
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+
+  '@dfinity/principal@3.3.1':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
+  '@dimforge/rapier3d-compat@0.12.0': {}
+
   '@emnapi/runtime@1.6.0':
     dependencies:
       tslib: 2.8.1
     optional: true
+
+  '@icp-sdk/core@4.1.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/identity-secp256k1@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0))(@dfinity/identity@3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0))(@dfinity/principal@3.3.1)':
+    dependencies:
+      '@dfinity/agent': 3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0)
+      '@dfinity/candid': 3.3.1(@dfinity/principal@3.3.1)
+      '@dfinity/identity': 3.3.1(@dfinity/agent@3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/hashes@1.8.0))(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0)
+      '@dfinity/identity-secp256k1': 3.3.1(@dfinity/candid@3.3.1(@dfinity/principal@3.3.1))(@dfinity/principal@3.3.1)(@noble/curves@1.9.7)(@noble/hashes@1.8.0)
+      '@dfinity/principal': 3.3.1
 
   '@img/colour@1.0.0': {}
 
@@ -268,7 +569,72 @@ snapshots:
   '@img/sharp-win32-x64@0.34.4':
     optional: true
 
+  '@noble/curves@1.9.7':
+    dependencies:
+      '@noble/hashes': 1.8.0
+
+  '@noble/hashes@1.8.0': {}
+
+  '@scure/base@1.2.6': {}
+
+  '@scure/bip32@1.7.0':
+    dependencies:
+      '@noble/curves': 1.9.7
+      '@noble/hashes': 1.8.0
+      '@scure/base': 1.2.6
+
+  '@scure/bip39@1.6.0':
+    dependencies:
+      '@noble/hashes': 1.8.0
+      '@scure/base': 1.2.6
+
+  '@tweenjs/tween.js@23.1.3': {}
+
+  '@types/react-dom@19.1.11(@types/react@19.1.17)':
+    dependencies:
+      '@types/react': 19.1.17
+
+  '@types/react@19.1.17':
+    dependencies:
+      csstype: 3.1.3
+
+  '@types/stats.js@0.17.4': {}
+
+  '@types/three@0.176.0':
+    dependencies:
+      '@dimforge/rapier3d-compat': 0.12.0
+      '@tweenjs/tween.js': 23.1.3
+      '@types/stats.js': 0.17.4
+      '@types/webxr': 0.5.24
+      '@webgpu/types': 0.1.69
+      fflate: 0.8.2
+      meshoptimizer: 0.18.1
+
+  '@types/webxr@0.5.24': {}
+
+  '@webgpu/types@0.1.69': {}
+
+  asn1js@3.0.7:
+    dependencies:
+      pvtsutils: 1.3.6
+      pvutils: 1.1.5
+      tslib: 2.8.1
+
+  csstype@3.1.3: {}
+
   detect-libc@2.1.2: {}
+
+  fflate@0.8.2: {}
+
+  idb@7.1.1: {}
+
+  meshoptimizer@0.18.1: {}
+
+  pvtsutils@1.3.6:
+    dependencies:
+      tslib: 2.8.1
+
+  pvutils@1.1.5: {}
 
   semver@7.7.3: {}
 
@@ -301,5 +667,4 @@ snapshots:
       '@img/sharp-win32-ia32': 0.34.4
       '@img/sharp-win32-x64': 0.34.4
 
-  tslib@2.8.1:
-    optional: true
+  tslib@2.8.1: {}

@@ -24,14 +24,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  AlertTriangle,
   Calendar,
+  CheckCircle2,
   ClipboardList,
   Edit2,
   Globe,
   Info,
-  KeyRound,
   Layers,
   Loader2,
+  LogIn,
   LogOut,
   Mail,
   Phone,
@@ -40,7 +42,7 @@ import {
   Trash2,
   Users,
 } from "lucide-react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -50,6 +52,7 @@ import type {
   EventInfo,
   TimelineStage,
 } from "../backend.d";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
 import {
   useAddContactInfo,
   useAddDomain,
@@ -62,42 +65,110 @@ import {
   useDeleteDomain,
   useDeleteTimelineStage,
   useEventInfo,
+  useIsCallerAdmin,
   useRegistrationCount,
   useUpdateContactInfo,
   useUpdateDomain,
   useUpdateEventInfo,
   useUpdateTimelineStage,
 } from "../hooks/useQueries";
+import { storeSessionParameter } from "../utils/urlParams";
 
-// ─── Admin Password Login ─────────────────────────────────────────────────────
+// Auto-inject the admin token from the build-time environment variable
+// This way the user never needs to find or enter it manually
+const BUILD_TIME_ADMIN_TOKEN: string =
+  (typeof process !== "undefined" &&
+    process.env &&
+    (process.env.CAFFEINE_ADMIN_TOKEN as string)) ||
+  "";
 
-// Admin password (hardcoded for direct access)
-const ADMIN_PASSWORD = "Akash@1206";
+// ─── Helper: Parse Unauthorized Errors ───────────────────────────────────────
 
-function AdminPasswordLogin({ onSuccess }: { onSuccess: () => void }) {
-  const [password, setPassword] = useState("");
-  const [verifying, setVerifying] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+function isUnauthorizedError(err: unknown): boolean {
+  return (
+    err instanceof Error &&
+    (err.message.includes("Unauthorized") ||
+      err.message.includes("unauthorized") ||
+      err.message.includes("not authorized") ||
+      err.message.includes("Access denied"))
+  );
+}
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!password.trim() || verifying) return;
-
-    setErrorMsg(null);
-    setVerifying(true);
-
-    // Direct client-side password check — no backend round-trip needed
-    setTimeout(() => {
-      if (password.trim() === ADMIN_PASSWORD) {
-        sessionStorage.setItem("caffeineAdminToken", password.trim());
-        toast.success("Admin access granted!");
-        onSuccess();
-      } else {
-        setVerifying(false);
-        setErrorMsg("Incorrect password. Please try again.");
-      }
-    }, 400);
+function handleMutationError(
+  err: unknown,
+  genericMessage: string,
+  onUnauthorized?: () => void,
+) {
+  if (isUnauthorizedError(err)) {
+    if (onUnauthorized) onUnauthorized();
+    toast.error("Session expired or access denied. Please log in again.");
+    return;
   }
+  const msg = err instanceof Error ? err.message : genericMessage;
+  toast.error(msg || genericMessage);
+}
+
+// ─── Admin Login Screen ───────────────────────────────────────────────────────
+
+type LoginStep = "idle" | "logging-in" | "checking";
+
+function AdminLoginScreen({ onLogin }: { onLogin: () => void }) {
+  const { login, identity, isLoggingIn, isInitializing, loginStatus } =
+    useInternetIdentity();
+  const { data: isAdmin, isFetching: checkingAdmin } = useIsCallerAdmin();
+
+  const [step, setStep] = useState<LoginStep>("idle");
+  const [accessDenied, setAccessDenied] = useState(false);
+
+  // Auto-store the token from the environment variable so useActor picks it up
+  useEffect(() => {
+    if (BUILD_TIME_ADMIN_TOKEN) {
+      storeSessionParameter("caffeineAdminToken", BUILD_TIME_ADMIN_TOKEN);
+    }
+  }, []);
+
+  // Once identity is available and we've verified admin status, complete login
+  useEffect(() => {
+    if (step === "checking" && identity && !checkingAdmin) {
+      if (isAdmin) {
+        localStorage.setItem("adminLoggedIn", "true");
+        onLogin();
+      } else {
+        setAccessDenied(true);
+        setStep("idle");
+      }
+    }
+  }, [step, identity, checkingAdmin, isAdmin, onLogin]);
+
+  // When identity appears after logging in with II, start checking
+  useEffect(() => {
+    if (loginStatus === "success" && identity && step === "logging-in") {
+      setStep("checking");
+    }
+  }, [loginStatus, identity, step]);
+
+  // If identity is already present from a previous session, check admin status
+  useEffect(() => {
+    if (identity && step === "idle" && !accessDenied) {
+      const wasLoggedIn = localStorage.getItem("adminLoggedIn") === "true";
+      if (wasLoggedIn) {
+        setStep("checking");
+      }
+    }
+  }, [identity, step, accessDenied]);
+
+  function handleLogin() {
+    setAccessDenied(false);
+    if (identity) {
+      // Already have identity, go straight to checking
+      setStep("checking");
+    } else {
+      login();
+      setStep("logging-in");
+    }
+  }
+
+  const isLoading = isLoggingIn || isInitializing || step === "checking";
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background pt-16">
@@ -111,74 +182,17 @@ function AdminPasswordLogin({ onSuccess }: { onSuccess: () => void }) {
         <Card className="glass-card border-primary/25">
           <CardHeader className="pb-4 text-center">
             <div className="mx-auto mb-4 w-14 h-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
-              {verifying ? (
-                <Loader2 className="w-7 h-7 text-primary animate-spin" />
-              ) : (
-                <KeyRound className="w-7 h-7 text-primary" />
-              )}
+              <ShieldCheck className="w-7 h-7 text-primary" />
             </div>
             <CardTitle className="font-display text-2xl font-black text-foreground">
-              Admin Login
+              Admin Panel
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-              {verifying
-                ? "Verifying your password, please wait…"
-                : "Enter your admin password to manage the event website."}
+              Manage your National Level Project Expo 2026 content
             </p>
           </CardHeader>
           <CardContent className="pt-0 space-y-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label
-                  htmlFor="admin-password"
-                  className="text-sm font-medium text-foreground/80"
-                >
-                  Admin Password
-                </Label>
-                <Input
-                  id="admin-password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setErrorMsg(null);
-                  }}
-                  placeholder="Enter admin password"
-                  className="bg-muted/30 border-border/60 focus:border-primary/50"
-                  autoComplete="current-password"
-                  disabled={verifying}
-                  data-ocid="admin.login.password_input"
-                />
-                {errorMsg && (
-                  <p
-                    className="text-xs text-destructive mt-1 flex items-center gap-1"
-                    data-ocid="admin.login.error_state"
-                  >
-                    {errorMsg}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                disabled={verifying || !password.trim()}
-                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-emerald font-display font-bold text-base py-3 gap-2"
-                data-ocid="admin.login.primary_button"
-              >
-                {verifying ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Verifying…
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-4 h-4" />
-                    Login
-                  </>
-                )}
-              </Button>
-            </form>
-
+            {/* Admin account display */}
             <div className="rounded-lg bg-primary/8 border border-primary/20 px-3 py-2.5 flex items-center gap-2">
               <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
               <p className="text-xs text-primary/80 leading-relaxed">
@@ -188,6 +202,83 @@ function AdminPasswordLogin({ onSuccess }: { onSuccess: () => void }) {
                 athiakash1977@gmail.com
               </p>
             </div>
+
+            <AnimatePresence mode="wait">
+              {step === "checking" ? (
+                <motion.div
+                  key="checking"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center gap-3 py-8"
+                  data-ocid="admin.login.loading_state"
+                >
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
+                  <p className="text-sm text-muted-foreground">
+                    Verifying admin access…
+                  </p>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="login"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25 }}
+                  className="space-y-4"
+                >
+                  {accessDenied && (
+                    <div
+                      className="rounded-lg bg-destructive/10 border border-destructive/30 px-3 py-2.5 text-xs text-destructive flex items-start gap-2"
+                      data-ocid="admin.login.error_state"
+                    >
+                      <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                      <span>
+                        Access denied. This Internet Identity does not have
+                        admin privileges. Please log in with the correct
+                        identity.
+                      </span>
+                    </div>
+                  )}
+
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Log in with Internet Identity to access the admin dashboard.
+                    The first login automatically activates your admin account.
+                  </p>
+
+                  <Button
+                    onClick={handleLogin}
+                    disabled={isLoading}
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 glow-emerald font-display font-bold text-base py-3 gap-2"
+                    data-ocid="admin.login.primary_button"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <LogIn className="w-4 h-4" />
+                    )}
+                    {isLoggingIn
+                      ? "Connecting…"
+                      : isInitializing
+                        ? "Initializing…"
+                        : isLoading
+                          ? "Verifying…"
+                          : identity
+                            ? "Check Admin Access"
+                            : "Login with Internet Identity"}
+                  </Button>
+
+                  <div className="rounded-lg bg-muted/20 border border-border/40 px-3 py-2.5 flex items-start gap-2">
+                    <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      Internet Identity is a secure, password-free login built
+                      into the Internet Computer. Your identity is
+                      cryptographically verified.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </CardContent>
         </Card>
       </motion.div>
@@ -304,7 +395,7 @@ function DashboardTab() {
 
 // ─── Event Info Tab ───────────────────────────────────────────────────────────
 
-function EventInfoTab() {
+function EventInfoTab({ onUnauthorized }: { onUnauthorized: () => void }) {
   const { data: eventInfo, isLoading } = useEventInfo();
   const updateMutation = useUpdateEventInfo();
 
@@ -330,8 +421,8 @@ function EventInfoTab() {
     try {
       await updateMutation.mutateAsync(form);
       toast.success("Event info updated successfully!");
-    } catch {
-      toast.error("Failed to update event info.");
+    } catch (err) {
+      handleMutationError(err, "Failed to update event info.", onUnauthorized);
     }
   }
 
@@ -438,7 +529,7 @@ function EventInfoTab() {
 
 // ─── Timeline Tab ─────────────────────────────────────────────────────────────
 
-function TimelineTab() {
+function TimelineTab({ onUnauthorized }: { onUnauthorized: () => void }) {
   const { data: stages = [], isLoading } = useAllTimelineStages();
   const addMutation = useAddTimelineStage();
   const updateMutation = useUpdateTimelineStage();
@@ -461,8 +552,8 @@ function TimelineTab() {
       await addMutation.mutateAsync(newStage);
       toast.success("Timeline stage added!");
       setNewStage({ stageName: "", date: "" });
-    } catch {
-      toast.error("Failed to add timeline stage.");
+    } catch (err) {
+      handleMutationError(err, "Failed to add timeline stage.", onUnauthorized);
     }
   }
 
@@ -478,8 +569,8 @@ function TimelineTab() {
       await updateMutation.mutateAsync({ oldName, stage: editForm });
       toast.success("Timeline stage updated!");
       setEditingIndex(null);
-    } catch {
-      toast.error("Failed to update stage.");
+    } catch (err) {
+      handleMutationError(err, "Failed to update stage.", onUnauthorized);
     }
   }
 
@@ -488,8 +579,8 @@ function TimelineTab() {
       await deleteMutation.mutateAsync(stageName);
       toast.success("Stage deleted.");
       setDeleteTarget(null);
-    } catch {
-      toast.error("Failed to delete stage.");
+    } catch (err) {
+      handleMutationError(err, "Failed to delete stage.", onUnauthorized);
     }
   }
 
@@ -700,7 +791,7 @@ function TimelineTab() {
 
 // ─── Domains Tab ──────────────────────────────────────────────────────────────
 
-function DomainsTab() {
+function DomainsTab({ onUnauthorized }: { onUnauthorized: () => void }) {
   const { data: domains = [], isLoading } = useAllDomains();
   const addMutation = useAddDomain();
   const updateMutation = useUpdateDomain();
@@ -723,8 +814,8 @@ function DomainsTab() {
       await addMutation.mutateAsync(newDomain);
       toast.success("Domain added!");
       setNewDomain({ name: "", description: "" });
-    } catch {
-      toast.error("Failed to add domain.");
+    } catch (err) {
+      handleMutationError(err, "Failed to add domain.", onUnauthorized);
     }
   }
 
@@ -740,8 +831,8 @@ function DomainsTab() {
       await updateMutation.mutateAsync({ oldName, domain: editForm });
       toast.success("Domain updated!");
       setEditingIndex(null);
-    } catch {
-      toast.error("Failed to update domain.");
+    } catch (err) {
+      handleMutationError(err, "Failed to update domain.", onUnauthorized);
     }
   }
 
@@ -750,8 +841,8 @@ function DomainsTab() {
       await deleteMutation.mutateAsync(name);
       toast.success("Domain deleted.");
       setDeleteTarget(null);
-    } catch {
-      toast.error("Failed to delete domain.");
+    } catch (err) {
+      handleMutationError(err, "Failed to delete domain.", onUnauthorized);
     }
   }
 
@@ -967,7 +1058,7 @@ const emptyContact: ContactInfo = {
   phoneNumber: "",
 };
 
-function ContactsTab() {
+function ContactsTab({ onUnauthorized }: { onUnauthorized: () => void }) {
   const { data: contacts = [], isLoading } = useAllContacts();
   const addMutation = useAddContactInfo();
   const updateMutation = useUpdateContactInfo();
@@ -989,8 +1080,8 @@ function ContactsTab() {
       await addMutation.mutateAsync(newContact);
       toast.success("Contact added!");
       setNewContact({ ...emptyContact });
-    } catch {
-      toast.error("Failed to add contact.");
+    } catch (err) {
+      handleMutationError(err, "Failed to add contact.", onUnauthorized);
     }
   }
 
@@ -1006,8 +1097,8 @@ function ContactsTab() {
       await updateMutation.mutateAsync({ oldName, contact: editForm });
       toast.success("Contact updated!");
       setEditingIndex(null);
-    } catch {
-      toast.error("Failed to update contact.");
+    } catch (err) {
+      handleMutationError(err, "Failed to update contact.", onUnauthorized);
     }
   }
 
@@ -1016,8 +1107,8 @@ function ContactsTab() {
       await deleteMutation.mutateAsync(name);
       toast.success("Contact deleted.");
       setDeleteTarget(null);
-    } catch {
-      toast.error("Failed to delete contact.");
+    } catch (err) {
+      handleMutationError(err, "Failed to delete contact.", onUnauthorized);
     }
   }
 
@@ -1392,7 +1483,13 @@ function RegistrationsTab() {
 
 // ─── Admin Panel (dashboard) ──────────────────────────────────────────────────
 
-function AdminPanel({ onLogout }: { onLogout: () => void }) {
+function AdminPanel({
+  onLogout,
+  onUnauthorized,
+}: {
+  onLogout: () => void;
+  onUnauthorized: () => void;
+}) {
   return (
     <div className="min-h-screen bg-background pt-16">
       <div className="absolute inset-0 tech-grid-bg opacity-25 pointer-events-none" />
@@ -1402,7 +1499,7 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45 }}
-          className="mb-8"
+          className="mb-6"
         >
           <div className="flex items-center justify-between gap-3 mb-2">
             <div className="flex items-center gap-3">
@@ -1488,16 +1585,16 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
             <DashboardTab />
           </TabsContent>
           <TabsContent value="event_info">
-            <EventInfoTab />
+            <EventInfoTab onUnauthorized={onUnauthorized} />
           </TabsContent>
           <TabsContent value="timeline">
-            <TimelineTab />
+            <TimelineTab onUnauthorized={onUnauthorized} />
           </TabsContent>
           <TabsContent value="domains">
-            <DomainsTab />
+            <DomainsTab onUnauthorized={onUnauthorized} />
           </TabsContent>
           <TabsContent value="contacts">
-            <ContactsTab />
+            <ContactsTab onUnauthorized={onUnauthorized} />
           </TabsContent>
           <TabsContent value="registrations">
             <RegistrationsTab />
@@ -1511,51 +1608,40 @@ function AdminPanel({ onLogout }: { onLogout: () => void }) {
 // ─── Main AdminPage ───────────────────────────────────────────────────────────
 
 export default function AdminPage() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [checkingSession, setCheckingSession] = useState(true);
   const queryClient = useQueryClient();
+  const { identity, clear } = useInternetIdentity();
 
-  // On mount: check if the stored token matches the admin password
-  useEffect(() => {
-    const storedToken = sessionStorage.getItem("caffeineAdminToken");
-    if (storedToken === ADMIN_PASSWORD) {
-      setIsAdmin(true);
-    } else if (storedToken) {
-      // Stale/invalid token — clear it
-      sessionStorage.removeItem("caffeineAdminToken");
-    }
-    setCheckingSession(false);
-  }, []);
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(() => {
+    return localStorage.getItem("adminLoggedIn") === "true";
+  });
+
+  // Must have both local flag AND active identity
+  const isFullyAuthenticated = isAdminLoggedIn && !!identity;
+
+  function handleLogin() {
+    setIsAdminLoggedIn(true);
+  }
 
   function handleLogout() {
+    localStorage.removeItem("adminLoggedIn");
     sessionStorage.removeItem("caffeineAdminToken");
+    setIsAdminLoggedIn(false);
+    clear();
     queryClient.clear();
-    setIsAdmin(false);
     toast.success("Logged out successfully.");
   }
 
-  // Show loading while checking existing session
-  if (checkingSession) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background pt-16">
-        <div className="flex items-center gap-3 text-muted-foreground">
-          <Loader2 className="w-5 h-5 animate-spin text-primary" />
-          <span className="font-medium">Checking session…</span>
-        </div>
-      </div>
-    );
+  function handleUnauthorized() {
+    toast.error("Your session doesn't have admin access. Please log in again.");
+    localStorage.removeItem("adminLoggedIn");
+    setIsAdminLoggedIn(false);
   }
 
-  if (isAdmin) {
-    return <AdminPanel onLogout={handleLogout} />;
+  if (!isFullyAuthenticated) {
+    return <AdminLoginScreen onLogin={handleLogin} />;
   }
 
   return (
-    <AdminPasswordLogin
-      onSuccess={() => {
-        setIsAdmin(true);
-        setCheckingSession(false);
-      }}
-    />
+    <AdminPanel onLogout={handleLogout} onUnauthorized={handleUnauthorized} />
   );
 }
