@@ -29,7 +29,9 @@ export default function DomainsPage() {
           iconBg: STATIC_DOMAINS[i % STATIC_DOMAINS.length].iconBg,
           iconColor: STATIC_DOMAINS[i % STATIC_DOMAINS.length].iconColor,
         }))
-      : [];
+      : !isLoading
+        ? STATIC_DOMAINS
+        : [];
 
   return (
     <section id="domains" className="py-24 relative pt-28">

@@ -46,7 +46,7 @@ export const STATIC_DOMAINS: StaticDomain[] = [
   {
     name: "AI & Machine Learning",
     description:
-      "Intelligent systems, deep learning, NLP, and autonomous agents.",
+      "Intelligent systems, automation, predictive models, and smart applications.",
     icon: Brain,
     glowColor: "oklch(0.72 0.21 160 / 0.3)",
     iconBg: "from-emerald-500/20 to-teal-600/20",
@@ -54,7 +54,8 @@ export const STATIC_DOMAINS: StaticDomain[] = [
   },
   {
     name: "IoT & Embedded Systems",
-    description: "Connected devices, microcontrollers, sensor networks.",
+    description:
+      "Sensor-based systems, smart devices, and connected technologies.",
     icon: Cpu,
     glowColor: "oklch(0.72 0.21 160 / 0.25)",
     iconBg: "from-green-500/20 to-emerald-600/20",
@@ -63,7 +64,7 @@ export const STATIC_DOMAINS: StaticDomain[] = [
   {
     name: "Data Analytics",
     description:
-      "Big data, visualization, statistical modeling, business intelligence.",
+      "Data processing, visualization, and decision-making using data.",
     icon: BarChart3,
     glowColor: "oklch(0.78 0.17 78 / 0.25)",
     iconBg: "from-amber-500/20 to-yellow-600/20",
@@ -71,7 +72,7 @@ export const STATIC_DOMAINS: StaticDomain[] = [
   },
   {
     name: "Smart Agriculture",
-    description: "Precision farming, crop monitoring, automated irrigation.",
+    description: "Technology solutions for modern farming and crop monitoring.",
     icon: Sprout,
     glowColor: "oklch(0.72 0.21 160 / 0.3)",
     iconBg: "from-lime-500/20 to-green-600/20",
@@ -80,7 +81,7 @@ export const STATIC_DOMAINS: StaticDomain[] = [
   {
     name: "Healthcare Technologies",
     description:
-      "Medical devices, health monitoring, telemedicine, biomedical.",
+      "Medical monitoring systems, wearable devices, and health innovations.",
     icon: HeartPulse,
     glowColor: "oklch(0.6 0.22 25 / 0.2)",
     iconBg: "from-rose-500/20 to-red-600/20",
@@ -88,7 +89,7 @@ export const STATIC_DOMAINS: StaticDomain[] = [
   },
   {
     name: "Sustainable Energy",
-    description: "Solar, wind, energy harvesting, storage, grid optimization.",
+    description: "Renewable energy systems and eco-friendly power solutions.",
     icon: Zap,
     glowColor: "oklch(0.78 0.17 78 / 0.3)",
     iconBg: "from-yellow-500/20 to-amber-600/20",
@@ -97,7 +98,7 @@ export const STATIC_DOMAINS: StaticDomain[] = [
   {
     name: "Smart Transportation",
     description:
-      "Autonomous vehicles, traffic management, EV systems, logistics.",
+      "Intelligent traffic systems, vehicle safety, and smart mobility solutions.",
     icon: Car,
     glowColor: "oklch(0.65 0.18 200 / 0.25)",
     iconBg: "from-sky-500/20 to-blue-600/20",
@@ -116,28 +117,38 @@ export interface StaticTimelineStage {
 export const STATIC_TIMELINE: StaticTimelineStage[] = [
   {
     stageName: "Registration Opens",
-    date: "January 10, 2026",
+    date: "08 March 2026",
     desc: "Teams register online with project details and team member info.",
   },
   {
-    stageName: "Abstract Submission",
-    date: "February 1, 2026",
-    desc: "Submit project abstract (max 500 words) covering objectives and SDG alignment.",
+    stageName: "Project Abstract Submission Deadline",
+    date: "14 March 2026",
+    desc: "Submit project abstract covering objectives, methodology, and SDG alignment.",
   },
   {
-    stageName: "Round 1 Results",
-    date: "February 15, 2026",
-    desc: "Shortlisted teams announced online via email and official website.",
+    stageName: "Round 1 – Abstract Presentation (Online)",
+    date: "15 March 2026",
+    desc: "Online abstract presentation to a panel of expert evaluators.",
   },
   {
-    stageName: "PPT Presentation",
-    date: "March 1, 2026",
-    desc: "Online presentation to a panel of expert evaluators from industry and academia.",
+    stageName: "Round 2 – PPT Presentation (Online)",
+    date: "22 March 2026",
+    desc: "Online PPT presentation to industry and academic experts. 10-minute presentation + 5-minute Q&A.",
   },
   {
-    stageName: "Final Expo",
-    date: "April 15, 2026",
-    desc: "Live project showcase, prototype demo, and prize distribution ceremony.",
+    stageName: "Registration Closes",
+    date: "01 April 2026",
+    desc: "Last date for team registrations. No entries will be accepted after this date.",
+  },
+  {
+    stageName: "Round 3 – Simulation / Prototype Review (Online)",
+    date: "05 April 2026",
+    desc: "Online review of simulation results or prototype demonstrations by the evaluation panel.",
+  },
+  {
+    stageName: "Final Round – Project Demonstration (Offline)",
+    date: "April 2026",
+    desc: "Live project showcase and prototype demonstration at the venue. Prize distribution ceremony.",
   },
 ];
 
@@ -146,6 +157,8 @@ export const TIMELINE_ICONS: LucideIcon[] = [
   FileText,
   CheckCircle2,
   Presentation,
+  CheckCircle2,
+  FlaskConical,
   Trophy,
 ];
 
@@ -160,16 +173,40 @@ export interface StaticContact {
 
 export const STATIC_CONTACTS: StaticContact[] = [
   {
-    name: "Arjun Kumar",
-    role: "Student Coordinator",
-    email: "arjun@college.ac.in",
-    phoneNumber: "+91 98765 43210",
+    name: "Dr. M. Malathi",
+    role: "Convenor – Professor & Head, ECE",
+    email: "",
+    phoneNumber: "",
   },
   {
-    name: "Dr. Priya Sharma",
-    role: "Faculty Coordinator",
-    email: "drpriya@college.ac.in",
-    phoneNumber: "+91 87654 32109",
+    name: "Mrs. P. Janani Durga",
+    role: "Faculty Coordinator – Assistant Professor, ECE",
+    email: "",
+    phoneNumber: "",
+  },
+  {
+    name: "Mrs. Lakshmiprabha",
+    role: "Faculty Coordinator – Assistant Professor, ECE",
+    email: "",
+    phoneNumber: "",
+  },
+  {
+    name: "A. Akash",
+    role: "Embex Club President – Student Coordinator",
+    email: "athiakash1977@gmail.com",
+    phoneNumber: "8667099605",
+  },
+  {
+    name: "R. Keerthivasan",
+    role: "Secretary, Embex Club – Student Coordinator",
+    email: "skeerthivasan410@gmail.com",
+    phoneNumber: "9597245927",
+  },
+  {
+    name: "P. Akash",
+    role: "Technical Event Head, Embex Club – Student Coordinator",
+    email: "akashpece@gmail.com",
+    phoneNumber: "7094362060",
   },
 ];
 

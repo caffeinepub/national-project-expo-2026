@@ -18,11 +18,10 @@ export default function Footer() {
             </div>
             <div>
               <p className="font-display text-sm font-black text-foreground">
-                National Level Project Expo 2026
+                Innovativelink-Expo 2K26
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {/* TODO: Replace with your college name */}
-                Dept. of ECE · [Your College Name]
+                Dept. of ECE · E.G.S.Pillay Engineering College
               </p>
             </div>
           </div>
@@ -43,7 +42,7 @@ export default function Footer() {
           {/* Attribution */}
           <div className="text-right">
             <p className="text-xs text-muted-foreground">
-              © {year} NLP Expo 2026. Built with ❤️ using{" "}
+              © {year} Innovativelink-Expo 2K26. Built with ❤️ using{" "}
               <a
                 href={utmLink}
                 target="_blank"

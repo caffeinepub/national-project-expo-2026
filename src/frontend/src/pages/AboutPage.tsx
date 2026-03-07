@@ -23,7 +23,7 @@ const STATIC_ABOUT_CARDS = [
 ];
 
 const DEFAULT_PURPOSE_TEXT =
-  "The National Level Project Expo 2026 aims to bring innovative student minds together to showcase technical excellence in AI, IoT, Embedded Systems, Analytics and Sustainable Technologies aligned with UN SDGs.";
+  "A platform to showcase innovative ideas, research, and technology-driven projects by young engineers. Innovativelink-Expo 2K26 brings together talented minds to demonstrate excellence in AI, IoT, Embedded Systems, Data Analytics, and Sustainable Technologies aligned with UN SDGs.";
 
 export default function AboutPage() {
   const { data: eventInfo } = useEventInfo();
@@ -45,7 +45,7 @@ export default function AboutPage() {
             About the Event
           </Badge>
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-black mb-4 leading-tight">
-            Why <span className="gradient-text">Project Expo 2026</span>?
+            Why <span className="gradient-text">Innovativelink-Expo 2K26</span>?
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-base sm:text-lg leading-relaxed">
             A premier national platform for engineering students to innovate,

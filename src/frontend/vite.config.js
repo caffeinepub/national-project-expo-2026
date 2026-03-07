@@ -42,7 +42,6 @@ export default defineConfig({
     environment("all", { prefix: "DFX_" }),
     environment(["II_URL"]),
     environment(["STORAGE_GATEWAY_URL"]),
-    environment({ CAFFEINE_ADMIN_TOKEN: "" }),
     react(),
   ],
   resolve: {

@@ -188,7 +188,7 @@ function AdminLoginScreen({ onLogin }: { onLogin: () => void }) {
               Admin Panel
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1 leading-relaxed">
-              Manage your National Level Project Expo 2026 content
+              Manage your Innovativelink-Expo 2K26 content
             </p>
           </CardHeader>
           <CardContent className="pt-0 space-y-4">

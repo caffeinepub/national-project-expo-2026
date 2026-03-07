@@ -44,7 +44,7 @@ export default function HomePage() {
           >
             <Badge className="mb-6 bg-primary/15 text-primary border-primary/40 px-4 py-1.5 text-xs font-bold uppercase tracking-widest">
               <Calendar className="w-3.5 h-3.5 mr-2" />
-              {eventInfo?.eventDate || "April 15, 2026"} · National Level Event
+              {eventInfo?.eventDate || "April 2026"} · National Level Event
             </Badge>
           </motion.div>
 
@@ -55,8 +55,14 @@ export default function HomePage() {
             transition={{ duration: 0.75, delay: 0.1 }}
             className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight mb-6"
           >
-            National Level <span className="gradient-text">Project Expo</span>{" "}
-            <span className="text-accent">2026</span>
+            {eventInfo?.name ? (
+              <span className="gradient-text">{eventInfo.name}</span>
+            ) : (
+              <>
+                <span className="gradient-text">Innovativelink-Expo</span>{" "}
+                <span className="text-accent">2K26</span>
+              </>
+            )}
           </motion.h1>
 
           {/* Organizer line */}
@@ -70,8 +76,7 @@ export default function HomePage() {
               Organized by:
             </span>
             <span className="text-base sm:text-lg text-primary font-bold">
-              {eventInfo?.organizer ||
-                "Department of Electronics and Communication Engineering"}
+              {eventInfo?.organizer || "Department of ECE"}
             </span>
           </motion.div>
 
@@ -86,7 +91,7 @@ export default function HomePage() {
               <Skeleton className="h-6 w-64 rounded-md" />
             ) : (
               <span className="text-accent">
-                {eventInfo?.college || "[Add Your College Name]"}
+                {eventInfo?.college || "E.G.S.Pillay Engineering College"}
               </span>
             )}
           </motion.p>
@@ -99,7 +104,7 @@ export default function HomePage() {
             className="text-base sm:text-lg text-muted-foreground max-w-2xl mb-10 leading-relaxed"
           >
             {eventInfo?.description ||
-              "Showcase your innovation. Align with UN SDGs. Compete at the national level. A 3-level rigorous screening ensures only the most impactful projects shine at the Final Expo."}
+              "A platform to showcase innovative ideas, research, and technology-driven projects by young engineers."}
           </motion.p>
 
           {/* CTA Buttons */}

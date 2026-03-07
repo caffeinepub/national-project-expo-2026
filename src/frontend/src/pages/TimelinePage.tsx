@@ -23,7 +23,9 @@ export default function TimelinePage() {
           date: s.date,
           desc: getDescForStage(s.stageName),
         }))
-      : [];
+      : !isLoading
+        ? STATIC_TIMELINE
+        : [];
 
   const stageIcons = TIMELINE_ICONS;
 
