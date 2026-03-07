@@ -14,6 +14,7 @@ import AdminPage from "./pages/AdminPage";
 import ContactPage from "./pages/ContactPage";
 import DomainsPage from "./pages/DomainsPage";
 import HomePage from "./pages/HomePage";
+import PrizesPage from "./pages/PrizesPage";
 import RegistrationPage from "./pages/RegistrationPage";
 import RulesPage from "./pages/RulesPage";
 import ScreeningPage from "./pages/ScreeningPage";
@@ -83,6 +84,12 @@ const contactRoute = createRoute({
   component: ContactPage,
 });
 
+const prizesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/prizes",
+  component: PrizesPage,
+});
+
 const rulesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rules",
@@ -102,6 +109,7 @@ const routeTree = rootRoute.addChildren([
   timelineRoute,
   registerRoute,
   screeningRoute,
+  prizesRoute,
   rulesRoute,
   contactRoute,
   adminRoute,

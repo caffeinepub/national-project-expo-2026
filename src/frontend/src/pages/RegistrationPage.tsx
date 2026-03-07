@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Trophy } from "lucide-react";
 import { motion } from "motion/react";
 
 const GOOGLE_FORM_URL = "https://forms.gle/VixdRSqbE5HD34nw7";
@@ -48,6 +48,86 @@ export default function RegistrationPage() {
         >
           All responses are collected and saved via Google Forms.
         </motion.p>
+
+        {/* Cash Prize Details */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mt-16"
+        >
+          <div className="text-center mb-8">
+            <p className="text-xs text-muted-foreground uppercase tracking-[0.15em] mb-2 font-bold flex items-center justify-center gap-1.5">
+              <Trophy className="w-3.5 h-3.5 text-yellow-400" />
+              Exciting Cash Prizes
+            </p>
+            <h3 className="font-display text-2xl sm:text-3xl font-black">
+              Win Big, Innovate <span className="gradient-text">Bold</span>
+            </h3>
+            <p className="text-muted-foreground text-sm mt-2">
+              Total prize pool of{" "}
+              <span className="text-primary font-bold">₹6,000</span> awaits the
+              best projects
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              {
+                rank: "1st",
+                emoji: "🥇",
+                label: "First Prize",
+                amount: "₹3,000",
+                color: "text-yellow-300",
+                border: "border-yellow-400/40",
+                bg: "bg-yellow-400/8",
+                glow: "shadow-yellow-400/10",
+              },
+              {
+                rank: "2nd",
+                emoji: "🥈",
+                label: "Second Prize",
+                amount: "₹2,000",
+                color: "text-slate-300",
+                border: "border-slate-300/40",
+                bg: "bg-slate-300/8",
+                glow: "shadow-slate-300/10",
+              },
+              {
+                rank: "3rd",
+                emoji: "🥉",
+                label: "Third Prize",
+                amount: "₹1,000",
+                color: "text-orange-300",
+                border: "border-orange-400/40",
+                bg: "bg-orange-400/8",
+                glow: "shadow-orange-300/10",
+              },
+            ].map((prize) => (
+              <div
+                key={prize.label}
+                data-ocid={`registration.prize.${prize.rank}.card`}
+                className={`flex flex-col items-center gap-3 px-6 py-7 rounded-2xl border ${prize.border} ${prize.bg} backdrop-blur-sm shadow-lg ${prize.glow}`}
+              >
+                <span className="text-4xl">{prize.emoji}</span>
+                <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">
+                  {prize.label}
+                </p>
+                <p
+                  className={`font-display font-black text-3xl ${prize.color}`}
+                >
+                  {prize.amount}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-xs text-muted-foreground mt-6 leading-relaxed">
+            Prizes will be awarded during the Final Round – Project
+            Demonstration (Offline) in April 2026.
+          </p>
+        </motion.div>
       </div>
     </section>
   );

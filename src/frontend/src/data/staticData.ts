@@ -28,6 +28,7 @@ export const NAV_LINKS = [
   { label: "Timeline", to: "/timeline", ocid: "nav.timeline.link" },
   { label: "Register", to: "/register", ocid: "nav.registration.link" },
   { label: "Screening", to: "/screening", ocid: "nav.screening.link" },
+  { label: "Prizes", to: "/prizes", ocid: "nav.prizes.link" },
   { label: "Rules", to: "/rules", ocid: "nav.rules.link" },
   { label: "Contact", to: "/contact", ocid: "nav.contact.link" },
 ];

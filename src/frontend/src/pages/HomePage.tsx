@@ -2,13 +2,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "@tanstack/react-router";
-import { ArrowRight, Calendar, Clock, Users } from "lucide-react";
+import { ArrowRight, Calendar, Clock, Trophy } from "lucide-react";
 import { motion } from "motion/react";
 import { CountdownBlock, useCountdown } from "../components/CountdownBlock";
-import { useEventInfo, useRegistrationCount } from "../hooks/useQueries";
+import { useEventInfo } from "../hooks/useQueries";
 
 export default function HomePage() {
-  const { data: regCount } = useRegistrationCount();
   const { data: eventInfo, isLoading: eventLoading } = useEventInfo();
   const countdown = useCountdown();
   const router = useRouter();
@@ -107,12 +106,91 @@ export default function HomePage() {
               "A platform to showcase innovative ideas, research, and technology-driven projects by young engineers."}
           </motion.p>
 
-          {/* CTA Buttons */}
+          {/* Countdown Timer */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="flex flex-wrap items-center gap-4 mb-14"
+          >
+            <p className="text-xs text-muted-foreground uppercase tracking-[0.15em] mb-4 font-bold flex items-center gap-1.5">
+              <Clock className="inline w-3.5 h-3.5 text-primary" />
+              Countdown to Final Expo
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <CountdownBlock value={countdown.days} label="Days" />
+              <CountdownBlock value={countdown.hours} label="Hours" />
+              <CountdownBlock value={countdown.minutes} label="Minutes" />
+              <CountdownBlock value={countdown.seconds} label="Seconds" />
+            </div>
+          </motion.div>
+
+          {/* Cash Prizes Teaser */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="mt-10"
+          >
+            <p className="text-xs text-muted-foreground uppercase tracking-[0.15em] mb-4 font-bold flex items-center gap-1.5">
+              <Trophy className="inline w-3.5 h-3.5 text-yellow-400" />
+              Exciting Cash Prizes
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {[
+                {
+                  emoji: "🥇",
+                  label: "First Prize",
+                  amount: "₹3,000",
+                  color: "text-yellow-300",
+                  border: "border-yellow-400/35",
+                  bg: "bg-yellow-400/8",
+                },
+                {
+                  emoji: "🥈",
+                  label: "Second Prize",
+                  amount: "₹2,000",
+                  color: "text-slate-300",
+                  border: "border-slate-300/35",
+                  bg: "bg-slate-300/8",
+                },
+                {
+                  emoji: "🥉",
+                  label: "Third Prize",
+                  amount: "₹1,000",
+                  color: "text-orange-300",
+                  border: "border-orange-400/35",
+                  bg: "bg-orange-400/8",
+                },
+              ].map((prize) => (
+                <button
+                  key={prize.label}
+                  type="button"
+                  onClick={() => router.navigate({ to: "/prizes" })}
+                  data-ocid={`home.prize.item.${prize.label.split(" ")[0].toLowerCase()}`}
+                  className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl border ${prize.border} ${prize.bg} backdrop-blur-sm hover:brightness-110 transition-all cursor-pointer`}
+                >
+                  <span className="text-xl">{prize.emoji}</span>
+                  <div className="text-left">
+                    <p className="text-xs text-muted-foreground font-medium">
+                      {prize.label}
+                    </p>
+                    <p
+                      className={`font-display font-black text-base ${prize.color}`}
+                    >
+                      {prize.amount}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* CTA Buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="flex flex-wrap items-center gap-4 mt-10"
           >
             <Button
               size="lg"
@@ -132,35 +210,6 @@ export default function HomePage() {
             >
               Learn More
             </Button>
-            {regCount !== undefined && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground glass-card px-4 py-2 rounded-full">
-                <Users className="w-4 h-4 text-primary" />
-                <span>
-                  <strong className="text-foreground font-bold">
-                    {regCount.toString()}
-                  </strong>{" "}
-                  teams registered
-                </span>
-              </div>
-            )}
-          </motion.div>
-
-          {/* Countdown Timer */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-          >
-            <p className="text-xs text-muted-foreground uppercase tracking-[0.15em] mb-4 font-bold flex items-center gap-1.5">
-              <Clock className="inline w-3.5 h-3.5 text-primary" />
-              Countdown to Final Expo
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <CountdownBlock value={countdown.days} label="Days" />
-              <CountdownBlock value={countdown.hours} label="Hours" />
-              <CountdownBlock value={countdown.minutes} label="Minutes" />
-              <CountdownBlock value={countdown.seconds} label="Seconds" />
-            </div>
           </motion.div>
         </div>
       </div>
